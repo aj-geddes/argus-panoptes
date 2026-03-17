@@ -1,0 +1,59 @@
+title: "Argus Panoptes"
+description: "The all-seeing eye for your AI agents. A self-hosted observability platform for LangGraph, CrewAI, OpenAI, and any framework that emits OpenTelemetry GenAI spans."
+author: "aj-geddes"
+email: ""
+
+url: "https://aj-geddes.github.io"
+baseurl: "/argus-panoptes"
+
+repository: "aj-geddes/argus-panoptes"
+github_username: "aj-geddes"
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    css_class: "highlight"
+    block:
+      line_numbers: false
+
+# Plugins
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+  - jekyll-feed
+
+# SEO
+twitter:
+  username: ""
+
+social:
+  name: Argus Panoptes
+  links:
+    - https://github.com/aj-geddes/argus-panoptes
+
+# Exclude from build
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - "*.gem"
+  - "*.gemspec"
+
+# Collections
+collections:
+  docs:
+    output: true
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "page"

@@ -1,0 +1,83 @@
+<nav class="site-sidebar" id="site-sidebar" aria-label="Documentation navigation">
+  <div class="nav-section">
+    <p class="nav-section-title">Overview</p>
+    <a href="{{ '/' | relative_url }}"
+       class="nav-link {% if page.url == '/' or page.url == '/index.html' %}active{% endif %}">
+      <span class="nav-link-icon">&#9673;</span>
+      Home
+    </a>
+    <a href="{{ '/getting-started' | relative_url }}"
+       class="nav-link {% if page.url contains 'getting-started' %}active{% endif %}">
+      <span class="nav-link-icon">&#9658;</span>
+      Getting Started
+    </a>
+  </div>
+
+  <div class="nav-divider"></div>
+
+  <div class="nav-section">
+    <p class="nav-section-title">Reference</p>
+    <a href="{{ '/api-reference' | relative_url }}"
+       class="nav-link {% if page.url contains 'api-reference' %}active{% endif %}">
+      <span class="nav-link-icon">&lt;/&gt;</span>
+      API Reference
+    </a>
+    <a href="{{ '/configuration' | relative_url }}"
+       class="nav-link {% if page.url contains 'configuration' %}active{% endif %}">
+      <span class="nav-link-icon">&#9881;</span>
+      Configuration
+    </a>
+    <a href="{{ '/sdk' | relative_url }}"
+       class="nav-link {% if page.url contains '/sdk' %}active{% endif %}">
+      <span class="nav-link-icon">&#9670;</span>
+      Python SDK
+    </a>
+  </div>
+
+  <div class="nav-divider"></div>
+
+  <div class="nav-section">
+    <p class="nav-section-title">Deep Dive</p>
+    <a href="{{ '/architecture' | relative_url }}"
+       class="nav-link {% if page.url contains 'architecture' %}active{% endif %}">
+      <span class="nav-link-icon">&#9648;</span>
+      Architecture
+    </a>
+    <a href="{{ '/deployment' | relative_url }}"
+       class="nav-link {% if page.url contains 'deployment' %}active{% endif %}">
+      <span class="nav-link-icon">&#9749;</span>
+      Deployment
+    </a>
+    <a href="{{ '/user-guide' | relative_url }}"
+       class="nav-link {% if page.url contains 'user-guide' %}active{% endif %}">
+      <span class="nav-link-icon">&#9781;</span>
+      User Guide
+    </a>
+  </div>
+
+  <div class="nav-divider"></div>
+
+  <div class="nav-section">
+    <p class="nav-section-title">Project</p>
+    <a href="{{ '/contributing' | relative_url }}"
+       class="nav-link {% if page.url contains 'contributing' %}active{% endif %}">
+      <span class="nav-link-icon">&#9774;</span>
+      Contributing
+    </a>
+    <a href="{{ '/changelog' | relative_url }}"
+       class="nav-link {% if page.url contains 'changelog' %}active{% endif %}">
+      <span class="nav-link-icon">&#9863;</span>
+      Changelog
+    </a>
+    <a href="https://github.com/aj-geddes/argus-panoptes"
+       class="nav-link"
+       target="_blank"
+       rel="noopener noreferrer">
+      <span class="nav-link-icon">&#9651;</span>
+      GitHub
+    </a>
+  </div>
+</nav>
+
+<!-- Sidebar overlay for mobile -->
+<div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
