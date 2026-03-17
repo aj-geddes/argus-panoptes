@@ -155,14 +155,14 @@ class TestRequiredMarkdownFiles:
         filepath = DOCS_ROOT / "architecture.md"
         assert filepath.exists(), "Missing architecture.md"
         content = filepath.read_text()
-        assert "```mermaid" in content, "architecture.md must contain at least one mermaid code block"
+        assert 'class="mermaid"' in content, "architecture.md must contain at least one mermaid div"
 
     def test_architecture_has_multiple_diagrams(self) -> None:
         """architecture.md must contain multiple Mermaid diagrams."""
         filepath = DOCS_ROOT / "architecture.md"
         assert filepath.exists(), "Missing architecture.md"
         content = filepath.read_text()
-        diagram_count = content.count("```mermaid")
+        diagram_count = content.count('class="mermaid"')
         assert diagram_count >= 3, f"architecture.md should have at least 3 mermaid diagrams, found {diagram_count}"
 
     def test_configuration_documents_all_yaml_sections(self) -> None:

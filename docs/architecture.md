@@ -10,7 +10,7 @@ Argus Panoptes is structured as a layered FastAPI application. Agent frameworks
 emit OpenTelemetry spans, which are ingested, stored, aggregated, and surfaced
 through both a REST API and a real-time HTMX frontend.
 
-```mermaid
+<div class="mermaid">
 graph TB
     subgraph Frameworks["Agent Frameworks"]
         LG["LangGraph"]
@@ -66,13 +66,13 @@ graph TB
     HX --> TR
     HX --> AL
     HX --> CF
-```
+</div>
 
 ---
 
 ## Component Hierarchy
 
-```mermaid
+<div class="mermaid">
 graph TD
     APP["argus.main (FastAPI app)"]
 
@@ -113,13 +113,13 @@ graph TD
     Services --> Core
     Services --> Models
     Core --> Models
-```
+</div>
 
 ---
 
 ## Data Flow: Span Ingestion
 
-```mermaid
+<div class="mermaid">
 sequenceDiagram
     participant C  as Client
     participant AP as /v1/traces
@@ -144,13 +144,13 @@ sequenceDiagram
     ME->>SS: broadcast_update(metrics_delta)
     SS-->>C: SSE event (dashboard refresh)
     AP-->>C: {"accepted": N, "rejected": 0}
-```
+</div>
 
 ---
 
 ## Data Flow: STDIO Ingestion (SDK)
 
-```mermaid
+<div class="mermaid">
 sequenceDiagram
     participant AG as Agent Code
     participant SDK as ArgusReporter (SDK)
@@ -169,14 +169,14 @@ sequenceDiagram
         AP-->>BG: {"accepted": N}
     end
 
-    Note over AG,SDK: report_span() returns immediately<br/>(non-blocking)
-```
+    Note over AG,SDK: report_span() returns immediately (non-blocking)
+</div>
 
 ---
 
 ## Entity-Relationship Diagram
 
-```mermaid
+<div class="mermaid">
 erDiagram
     AGENT {
         uuid    id          PK
@@ -242,13 +242,13 @@ erDiagram
     TRACE ||--o{ SPAN : "contains"
     SPAN  ||--o{ TOOL_CALL : "invokes"
     AGENT ||--o{ METRIC_SNAPSHOT : "aggregates"
-```
+</div>
 
 ---
 
 ## Configuration Hot-Reload
 
-```mermaid
+<div class="mermaid">
 sequenceDiagram
     participant FS  as Filesystem
     participant WD  as watchdog (file watcher)
@@ -265,10 +265,10 @@ sequenceDiagram
         CM->>CC: update_pricing(new_config.cost_model)
         CM-->>FS: log "Config reloaded OK"
     else Invalid config
-        CM-->>FS: log "Config reload FAILED: {error}"
+        CM-->>FS: log "Config reload FAILED: error"
         Note over CM: Old config remains active
     end
-```
+</div>
 
 ---
 
