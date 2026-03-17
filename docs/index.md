@@ -73,7 +73,7 @@ layout: default
 
 <hr>
 
-<article class="article-content">
+<article class="prose">
 
 <h2>Quick Start</h2>
 <p>Up and running in under two minutes with Docker:</p>
