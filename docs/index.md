@@ -73,6 +73,8 @@ layout: default
 
 <hr>
 
+<article class="article-content">
+
 <h2>Quick Start</h2>
 <p>Up and running in under two minutes with Docker:</p>
 <pre><code>git clone https://github.com/aj-geddes/argus-panoptes.git
@@ -111,4 +113,5 @@ docker compose up</code></pre>
   </tbody>
 </table>
 
+</article>
 </div>
