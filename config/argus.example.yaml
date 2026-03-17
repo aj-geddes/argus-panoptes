@@ -1,0 +1,52 @@
+# Argus Panoptes Configuration Template
+# Copy to argus.yaml and customize for your deployment.
+# This file is LIVE RELOADED — changes apply without restart.
+
+server:
+  host: "0.0.0.0"
+  port: 8000
+  workers: 4
+  log_level: "INFO"
+
+database:
+  # SQLite for development:
+  url: "sqlite+aiosqlite:///./argus.db"
+  # PostgreSQL for production:
+  # url: "postgresql+asyncpg://user:pass@localhost:5432/argus"
+  pool_size: 10
+
+ingestion:
+  otlp_enabled: true
+  otlp_port: 4318
+  rest_enabled: true
+  max_batch_size: 1000
+  flush_interval_seconds: 5
+
+metrics:
+  aggregation_windows: ["1m", "5m", "1h", "1d"]
+  retention_days: 90
+  snapshot_interval_seconds: 60
+
+cost_model:
+  providers:
+    openai:
+      gpt-4o: { input: 2.50, output: 10.00 }
+    anthropic:
+      claude-sonnet-4: { input: 3.00, output: 15.00 }
+
+alerts:
+  enabled: false
+  check_interval_seconds: 30
+  rules: []
+
+webhooks: []
+
+agents:
+  auto_register: true
+  default_tags:
+    environment: "development"
+
+dashboard:
+  refresh_interval_seconds: 5
+  default_time_range: "1h"
+  charts: []

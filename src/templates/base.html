@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Argus Panoptes{% endblock %} — AI Agent Metrics Hub</title>
+
+    <!-- Tailwind CSS (CDN for dev, compiled for prod) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        surface: '#0f172a',
+                        background: '#020617',
+                    },
+                    fontFamily: {
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                },
+            },
+        }
+    </script>
+
+    <!-- HTMX -->
+    <script src="/static/js/htmx.min.js" defer></script>
+    <!-- HTMX SSE Extension -->
+    <script src="/static/js/htmx-sse.js" defer></script>
+    <!-- Alpine.js -->
+    <script src="/static/js/alpine.min.js" defer></script>
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #020617;
+            color: #e2e8f0;
+        }
+        .htmx-indicator {
+            opacity: 0;
+            transition: opacity 300ms ease-in;
+        }
+        .htmx-request .htmx-indicator {
+            opacity: 1;
+        }
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body class="bg-background min-h-screen" x-data="{ sidebarOpen: true }">
+    <!-- Top Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-surface border-b border-slate-700/50 px-6 py-3">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <button @click="sidebarOpen = !sidebarOpen" class="text-slate-400 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+                <h1 class="text-lg font-bold text-white">
+                    <span class="text-emerald-400">Argus</span> Panoptes
+                </h1>
+                <span class="text-xs text-slate-500 font-mono">v{{ version | default("0.1.0") }}</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <!-- Loading indicator -->
+                <div id="loading" class="htmx-indicator">
+                    <svg class="animate-spin h-5 w-5 text-emerald-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                    </svg>
+                </div>
+                <!-- Dark mode toggle -->
+                <div x-data="{ dark: true }"
+                     @click="dark = !dark; document.documentElement.classList.toggle('dark', dark)"
+                     class="cursor-pointer text-slate-400 hover:text-white">
+                    <span x-show="!dark" class="text-lg">Light</span>
+                    <span x-show="dark" class="text-lg">Dark</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex pt-14">
+        <!-- Sidebar -->
+        <aside x-show="sidebarOpen"
+               x-transition
+               class="fixed left-0 top-14 bottom-0 w-56 bg-surface border-r border-slate-700/50 overflow-y-auto">
+            <nav class="p-4 space-y-1">
+                <a href="/"
+                   class="block px-3 py-2 rounded-lg text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+                   hx-get="/"
+                   hx-target="#main-content"
+                   hx-push-url="true"
+                   hx-indicator="#loading">
+                    Dashboard
+                </a>
+                <a href="#"
+                   class="block px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed">
+                    Agents (coming soon)
+                </a>
+                <a href="#"
+                   class="block px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed">
+                    Traces (coming soon)
+                </a>
+                <a href="#"
+                   class="block px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed">
+                    Cost Analytics (coming soon)
+                </a>
+                <a href="#"
+                   class="block px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed">
+                    Alerts (coming soon)
+                </a>
+                <a href="#"
+                   class="block px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed">
+                    Config (coming soon)
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main content -->
+        <main id="main-content"
+              class="flex-1 p-6"
+              :class="sidebarOpen ? 'ml-56' : 'ml-0'">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <!-- Toast container for notifications -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
+</body>
+</html>
