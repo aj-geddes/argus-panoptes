@@ -16,8 +16,12 @@ from fastapi.staticfiles import StaticFiles
 from argus import __version__
 from argus.core.config import ConfigManager
 from argus.core.database import create_tables, dispose_engine, init_engine
+from argus.routes.api.agents import router as agents_router
 from argus.routes.api.ingest import router as ingest_router
+from argus.routes.api.metrics import router as metrics_router
+from argus.routes.api.sse import router as sse_router
 from argus.routes.views.dashboard import router as dashboard_router
+from argus.services.ingestion import init_cost_calculator
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +31,10 @@ _config: ConfigManager | None = None
 
 def on_config_change(new_config: dict[str, Any]) -> None:
     """Called when config.yaml changes on disk."""
+    # Re-initialize cost calculator with new pricing
+    cost_model = new_config.get("cost_model", {})
+    if cost_model:
+        init_cost_calculator(cost_model)
     logger.info("Configuration reloaded successfully")
 
 
@@ -88,6 +96,9 @@ def create_app(config_path: str | None = None) -> FastAPI:
 
     # Include routers
     app.include_router(ingest_router)
+    app.include_router(agents_router)
+    app.include_router(metrics_router)
+    app.include_router(sse_router)
     app.include_router(dashboard_router)
 
     return app

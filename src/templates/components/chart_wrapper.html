@@ -1,0 +1,11 @@
+{# Chart.js wrapper component.
+   Args: chart_id (str), chart_type (str), title (str),
+         width (str, optional), height (str, optional - default "300px") #}
+<div class="bg-surface rounded-xl border border-slate-700/50 p-5">
+    <div class="flex items-center justify-between mb-4">
+        <h3 class="text-sm font-semibold text-white">{{ title }}</h3>
+    </div>
+    <div style="height: {{ height | default('300px') }}; position: relative;">
+        <canvas id="{{ chart_id }}"></canvas>
+    </div>
+</div>

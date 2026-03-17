@@ -1,0 +1,46 @@
+{# Metrics cards partial — returned by HTMX for dashboard updates.
+   Expects: total_traces, total_tokens, total_cost, avg_latency, error_count, agent_count #}
+<div id="metrics-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+    {# Total Traces #}
+    <div class="bg-surface rounded-xl border border-slate-700/50 p-5 transition-all hover:border-slate-600/50">
+        <div class="text-sm text-slate-400 mb-2">Total Traces</div>
+        <div class="text-3xl font-bold font-mono text-white">{{ total_traces | default(0) }}</div>
+        <div class="text-xs text-slate-500 mt-1">{{ agent_count | default(0) }} agents</div>
+    </div>
+
+    {# Total Tokens #}
+    <div class="bg-surface rounded-xl border border-slate-700/50 p-5 transition-all hover:border-slate-600/50">
+        <div class="text-sm text-slate-400 mb-2">Total Tokens</div>
+        <div class="text-3xl font-bold font-mono text-white">{{ "{:,}".format(total_tokens | default(0)) }}</div>
+        <div class="text-xs text-slate-500 mt-1">input + output</div>
+    </div>
+
+    {# Total Cost #}
+    <div class="bg-surface rounded-xl border border-slate-700/50 p-5 transition-all hover:border-slate-600/50">
+        <div class="text-sm text-slate-400 mb-2">Total Cost</div>
+        <div class="text-3xl font-bold font-mono text-emerald-400">${{ "%.4f" | format(total_cost | default(0)) }}</div>
+        <div class="text-xs text-slate-500 mt-1">USD</div>
+    </div>
+
+    {# Avg Latency #}
+    <div class="bg-surface rounded-xl border border-slate-700/50 p-5 transition-all hover:border-slate-600/50">
+        <div class="text-sm text-slate-400 mb-2">Avg Latency</div>
+        <div class="text-3xl font-bold font-mono text-sky-400">{{ "%.0f" | format(avg_latency | default(0)) }}ms</div>
+        <div class="text-xs text-slate-500 mt-1">mean response time</div>
+    </div>
+
+    {# Errors #}
+    <div class="bg-surface rounded-xl border border-slate-700/50 p-5 transition-all hover:border-slate-600/50">
+        <div class="text-sm text-slate-400 mb-2">Errors</div>
+        <div class="text-3xl font-bold font-mono {% if error_count | default(0) > 0 %}text-rose-400{% else %}text-white{% endif %}">
+            {{ error_count | default(0) }}
+        </div>
+        <div class="text-xs text-slate-500 mt-1">
+            {% if total_traces | default(0) > 0 %}
+                {{ "%.1f" | format((error_count | default(0)) / (total_traces | default(1)) * 100) }}% error rate
+            {% else %}
+                no data
+            {% endif %}
+        </div>
+    </div>
+</div>

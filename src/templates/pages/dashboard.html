@@ -2,40 +2,49 @@
 
 {% block title %}Dashboard{% endblock %}
 
+{% block head %}
+<!-- Chart.js from CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+{% endblock %}
+
 {% block content %}
-<div class="space-y-6">
-    <!-- Page header -->
+<div class="space-y-6" hx-ext="sse" sse-connect="/sse/dashboard">
+
+    <!-- Page header with time range picker -->
     <div class="flex items-center justify-between">
         <h2 class="text-2xl font-bold text-white">Dashboard</h2>
-        <div x-data="{ range: '1h' }" class="flex gap-2">
-            {% for r in ['15m', '1h', '6h', '24h', '7d'] %}
-            <button @click="range = '{{ r }}'"
-                    :class="range === '{{ r }}' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-400'"
-                    class="px-3 py-1 rounded text-sm font-mono transition-colors">
-                {{ r }}
-            </button>
-            {% endfor %}
-        </div>
+        {% include 'components/time_picker.html' %}
     </div>
 
-    <!-- Metric cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <!-- Agents card -->
+    <!-- Metric cards — auto-updated via SSE -->
+    <div sse-swap="metrics" hx-swap="innerHTML">
+        {% include 'components/metrics_cards.html' %}
+    </div>
+
+    <!-- Charts row -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <!-- Token Usage Chart -->
         <div class="bg-surface rounded-xl border border-slate-700/50 p-5">
-            <div class="text-sm text-slate-400 mb-1">Registered Agents</div>
-            <div class="text-3xl font-bold font-mono text-white">{{ agent_count }}</div>
+            <h3 class="text-sm font-semibold text-white mb-4">Token Usage</h3>
+            <div style="height: 300px; position: relative;">
+                <canvas id="tokenChart"></canvas>
+            </div>
         </div>
 
-        <!-- Traces card -->
+        <!-- Cost Breakdown Chart -->
         <div class="bg-surface rounded-xl border border-slate-700/50 p-5">
-            <div class="text-sm text-slate-400 mb-1">Total Traces</div>
-            <div class="text-3xl font-bold font-mono text-white">{{ trace_count }}</div>
+            <h3 class="text-sm font-semibold text-white mb-4">Cost by Model</h3>
+            <div style="height: 300px; position: relative;">
+                <canvas id="costChart"></canvas>
+            </div>
         </div>
 
-        <!-- Spans card -->
+        <!-- Latency Chart -->
         <div class="bg-surface rounded-xl border border-slate-700/50 p-5">
-            <div class="text-sm text-slate-400 mb-1">Total Spans</div>
-            <div class="text-3xl font-bold font-mono text-white">{{ span_count }}</div>
+            <h3 class="text-sm font-semibold text-white mb-4">Latency Distribution</h3>
+            <div style="height: 300px; position: relative;">
+                <canvas id="latencyChart"></canvas>
+            </div>
         </div>
     </div>
 
@@ -52,6 +61,7 @@
                         <th class="px-5 py-3 font-medium">Operation</th>
                         <th class="px-5 py-3 font-medium">Model</th>
                         <th class="px-5 py-3 font-medium">Tokens</th>
+                        <th class="px-5 py-3 font-medium">Cost</th>
                         <th class="px-5 py-3 font-medium">Latency</th>
                         <th class="px-5 py-3 font-medium">Status</th>
                     </tr>
@@ -63,7 +73,8 @@
                             <td class="px-5 py-3 font-mono text-xs text-slate-300">{{ span.id[:12] }}...</td>
                             <td class="px-5 py-3 text-white">{{ span.operation_name }}</td>
                             <td class="px-5 py-3 text-slate-300 font-mono text-xs">{{ span.model or "-" }}</td>
-                            <td class="px-5 py-3 font-mono text-xs text-slate-300">{{ span.total_tokens }}</td>
+                            <td class="px-5 py-3 font-mono text-xs text-slate-300">{{ "{:,}".format(span.total_tokens) }}</td>
+                            <td class="px-5 py-3 font-mono text-xs text-emerald-400">${{ "%.6f" | format(span.cost_usd) }}</td>
                             <td class="px-5 py-3 font-mono text-xs text-slate-300">{{ span.latency_ms }}ms</td>
                             <td class="px-5 py-3">
                                 {% if span.status == "ok" %}
@@ -80,7 +91,7 @@
                         {% endfor %}
                     {% else %}
                         <tr>
-                            <td colspan="6" class="px-5 py-12 text-center text-slate-500">
+                            <td colspan="7" class="px-5 py-12 text-center text-slate-500">
                                 <div class="space-y-2">
                                     <div class="text-lg">No spans ingested yet</div>
                                     <div class="text-sm">Send trace data to <code class="bg-slate-800 px-2 py-0.5 rounded font-mono">POST /v1/traces</code> to get started</div>
@@ -93,4 +104,113 @@
         </div>
     </div>
 </div>
+
+<script>
+// Chart.js theme configuration
+const chartColors = {
+    emerald: 'rgba(16, 185, 129, 0.8)',
+    emeraldFill: 'rgba(16, 185, 129, 0.1)',
+    sky: 'rgba(56, 189, 248, 0.8)',
+    skyFill: 'rgba(56, 189, 248, 0.1)',
+    amber: 'rgba(245, 158, 11, 0.8)',
+    amberFill: 'rgba(245, 158, 11, 0.1)',
+    rose: 'rgba(244, 63, 94, 0.8)',
+    roseFill: 'rgba(244, 63, 94, 0.1)',
+    slate: 'rgba(148, 163, 184, 0.3)',
+    grid: 'rgba(51, 65, 85, 0.3)',
+    text: 'rgba(148, 163, 184, 1)',
+};
+
+const defaultOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+        legend: {
+            labels: { color: chartColors.text, font: { family: "'JetBrains Mono', monospace", size: 11 } }
+        }
+    },
+    scales: {
+        x: {
+            grid: { color: chartColors.grid },
+            ticks: { color: chartColors.text, font: { family: "'JetBrains Mono', monospace", size: 10 } }
+        },
+        y: {
+            grid: { color: chartColors.grid },
+            ticks: { color: chartColors.text, font: { family: "'JetBrains Mono', monospace", size: 10 } }
+        }
+    }
+};
+
+// Token Usage Chart
+const tokenCtx = document.getElementById('tokenChart');
+if (tokenCtx) {
+    new Chart(tokenCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ chart_data.token_labels | default([]) | tojson }},
+            datasets: [
+                {
+                    label: 'Input Tokens',
+                    data: {{ chart_data.input_tokens | default([]) | tojson }},
+                    backgroundColor: chartColors.emerald,
+                },
+                {
+                    label: 'Output Tokens',
+                    data: {{ chart_data.output_tokens | default([]) | tojson }},
+                    backgroundColor: chartColors.sky,
+                }
+            ]
+        },
+        options: { ...defaultOptions, plugins: { ...defaultOptions.plugins, title: { display: false } } }
+    });
+}
+
+// Cost Breakdown Chart
+const costCtx = document.getElementById('costChart');
+if (costCtx) {
+    new Chart(costCtx, {
+        type: 'doughnut',
+        data: {
+            labels: {{ chart_data.cost_labels | default([]) | tojson }},
+            datasets: [{
+                data: {{ chart_data.cost_values | default([]) | tojson }},
+                backgroundColor: [
+                    chartColors.emerald, chartColors.sky, chartColors.amber,
+                    chartColors.rose, 'rgba(168, 85, 247, 0.8)', 'rgba(14, 165, 233, 0.8)'
+                ],
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { color: chartColors.text, font: { family: "'JetBrains Mono', monospace", size: 11 }, padding: 12 }
+                }
+            }
+        }
+    });
+}
+
+// Latency Distribution Chart
+const latencyCtx = document.getElementById('latencyChart');
+if (latencyCtx) {
+    new Chart(latencyCtx, {
+        type: 'line',
+        data: {
+            labels: {{ chart_data.latency_labels | default([]) | tojson }},
+            datasets: [{
+                label: 'Latency (ms)',
+                data: {{ chart_data.latency_values | default([]) | tojson }},
+                borderColor: chartColors.sky,
+                backgroundColor: chartColors.skyFill,
+                fill: true,
+                tension: 0.4,
+            }]
+        },
+        options: defaultOptions
+    });
+}
+</script>
 {% endblock %}

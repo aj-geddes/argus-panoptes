@@ -17,12 +17,14 @@ async def test_dashboard_returns_html(app_client) -> None:
 
 @pytest.mark.asyncio
 async def test_dashboard_shows_metric_cards(app_client) -> None:
-    """Dashboard should display metric cards for agents, traces, and spans."""
+    """Dashboard should display metric cards for traces, tokens, cost, latency, errors."""
     response = await app_client.get("/")
     assert response.status_code == 200
-    assert "Registered Agents" in response.text
     assert "Total Traces" in response.text
-    assert "Total Spans" in response.text
+    assert "Total Tokens" in response.text
+    assert "Total Cost" in response.text
+    assert "Avg Latency" in response.text
+    assert "Errors" in response.text
 
 
 @pytest.mark.asyncio

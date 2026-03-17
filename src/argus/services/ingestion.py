@@ -13,8 +13,19 @@ from argus.models.span import Span
 from argus.models.tool_call import ToolCall
 from argus.models.trace import Trace
 from argus.schemas.otlp import Attribute, IngestRequest
+from argus.services.cost_calculator import CostCalculator
 
 logger = logging.getLogger(__name__)
+
+# Module-level cost calculator, initialized lazily from config
+_cost_calculator: CostCalculator | None = None
+
+
+def init_cost_calculator(cost_model_config: dict) -> None:
+    """Initialize the cost calculator with pricing config."""
+    global _cost_calculator
+    _cost_calculator = CostCalculator(cost_model_config)
+    logger.info("Cost calculator initialized")
 
 
 def _get_attr(attributes: list[Attribute], key: str) -> str | int | bool | float | None:
@@ -124,6 +135,16 @@ async def process_ingest_request(
                 if ended_at and started_at:
                     latency_ms = int((ended_at - started_at).total_seconds() * 1000)
 
+                # Calculate cost if pricing is available
+                cost_usd = 0.0
+                if _cost_calculator and model and provider:
+                    cost_usd = _cost_calculator.calculate(
+                        provider=str(provider),
+                        model=str(model),
+                        input_tokens=int(input_tokens),
+                        output_tokens=int(output_tokens),
+                    )
+
                 # Create span
                 span = Span(
                     id=span_data.spanId,
@@ -135,6 +156,7 @@ async def process_ingest_request(
                     input_tokens=int(input_tokens),
                     output_tokens=int(output_tokens),
                     total_tokens=int(input_tokens) + int(output_tokens),
+                    cost_usd=cost_usd,
                     latency_ms=latency_ms,
                     status="ok",
                     started_at=started_at,
@@ -162,4 +184,16 @@ async def process_ingest_request(
 
     await session.commit()
     logger.info("Ingested %d spans", total_spans)
+
+    # Broadcast SSE update for live dashboard
+    if total_spans > 0:
+        try:
+            from argus.core.sse import dashboard_broadcaster
+
+            await dashboard_broadcaster.publish(
+                {"event": "metrics", "data": {"spans_ingested": total_spans}}
+            )
+        except Exception:
+            logger.debug("SSE broadcast skipped (no event loop or subscribers)")
+
     return total_spans

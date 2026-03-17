@@ -95,9 +95,13 @@
                    hx-indicator="#loading">
                     Dashboard
                 </a>
-                <a href="#"
-                   class="block px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed">
-                    Agents (coming soon)
+                <a href="/agents"
+                   class="block px-3 py-2 rounded-lg text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+                   hx-get="/agents"
+                   hx-target="#main-content"
+                   hx-push-url="true"
+                   hx-indicator="#loading">
+                    Agents
                 </a>
                 <a href="#"
                    class="block px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed">

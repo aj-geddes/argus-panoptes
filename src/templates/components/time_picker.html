@@ -1,0 +1,17 @@
+{# Time range picker component with Alpine.js state.
+   Dispatches 'time-change' event when range is selected.
+   Uses HTMX to fetch updated partials for the selected range. #}
+<div x-data="{ range: '{{ default_range | default('1h') }}' }"
+     class="flex items-center gap-2">
+    <span class="text-xs text-slate-500 mr-1">Time range:</span>
+    {% for r in ['15m', '1h', '6h', '24h', '7d'] %}
+    <button @click="range = '{{ r }}'; $dispatch('time-change', { range: '{{ r }}' })"
+            :class="range === '{{ r }}' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'"
+            class="px-3 py-1 rounded text-sm font-mono transition-colors"
+            hx-get="/partials/metrics-cards?time_range={{ r }}"
+            hx-target="#metrics-cards"
+            hx-indicator="#loading">
+        {{ r }}
+    </button>
+    {% endfor %}
+</div>
