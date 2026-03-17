@@ -1,8 +1,15 @@
-"""Alembic migration environment."""
+"""Alembic migration environment.
+
+Supports both SQLite and PostgreSQL backends.
+Database URL resolution priority:
+  1. DATABASE_URL environment variable
+  2. sqlalchemy.url from alembic.ini
+"""
 
 from __future__ import annotations
 
 import asyncio
+import os
 from logging.config import fileConfig
 
 from alembic import context
@@ -20,6 +27,11 @@ if config.config_file_name is not None:
 
 target_metadata = SQLModel.metadata
 
+# Allow DATABASE_URL env var to override alembic.ini
+_env_url = os.environ.get("DATABASE_URL")
+if _env_url:
+    config.set_main_option("sqlalchemy.url", _env_url)
+
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode."""
@@ -29,14 +41,19 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        render_as_batch=True,  # Required for SQLite ALTER TABLE support
     )
 
     with context.begin_transaction():
         context.run_migrations()
 
 
-def do_run_migrations(connection):
-    context.configure(connection=connection, target_metadata=target_metadata)
+def do_run_migrations(connection):  # type: ignore[no-untyped-def]
+    context.configure(
+        connection=connection,
+        target_metadata=target_metadata,
+        render_as_batch=True,  # Required for SQLite ALTER TABLE support
+    )
     with context.begin_transaction():
         context.run_migrations()
 

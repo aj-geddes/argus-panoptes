@@ -74,6 +74,16 @@ cost_model:
       llama-4-maverick:  { input: 0.20, output: 0.60 }
       llama-4-scout:     { input: 0.10, output: 0.30 }
 
+security:
+  api_key_auth:
+    enabled: false
+    header_name: "X-API-Key"
+    # key: "your-secret-api-key"  # Or set ARGUS_API_KEY env var
+  rate_limiting:
+    enabled: false
+    requests_per_window: 1000
+    window_seconds: 60
+
 alerts:
   enabled: true
   check_interval_seconds: 30

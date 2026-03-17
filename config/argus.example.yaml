@@ -34,6 +34,16 @@ cost_model:
     anthropic:
       claude-sonnet-4: { input: 3.00, output: 15.00 }
 
+security:
+  api_key_auth:
+    enabled: false
+    header_name: "X-API-Key"
+    # key: "your-secret-api-key"  # Or set ARGUS_API_KEY env var
+  rate_limiting:
+    enabled: false
+    requests_per_window: 1000
+    window_seconds: 60
+
 alerts:
   enabled: false
   check_interval_seconds: 30

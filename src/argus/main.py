@@ -15,7 +15,8 @@ from fastapi.staticfiles import StaticFiles
 
 from argus import __version__
 from argus.core.config import ConfigManager
-from argus.core.database import create_tables, dispose_engine, init_engine
+from argus.core.database import create_tables, dispose_engine, init_engine, resolve_database_url
+from argus.core.security import setup_security_middleware
 from argus.routes.api.agents import router as agents_router
 from argus.routes.api.alerts import init_alert_engine
 from argus.routes.api.alerts import router as alerts_router
@@ -77,7 +78,8 @@ def create_app(config_path: str | None = None) -> FastAPI:
     async def lifespan(app: FastAPI):  # type: ignore[no-untyped-def]
         """Application lifespan: startup and shutdown."""
         # Startup
-        db_url = _config.get("database.url", "sqlite+aiosqlite:///./argus.db")
+        config_db_url = _config.get("database.url")
+        db_url = resolve_database_url(config_db_url)
         pool_size = _config.get("database.pool_size", 5)
         init_engine(db_url, pool_size)
         await create_tables()
@@ -104,6 +106,11 @@ def create_app(config_path: str | None = None) -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    # Security middleware (API key auth + rate limiting)
+    security_config = _config.get("security", {})
+    if isinstance(security_config, dict):
+        setup_security_middleware(app, security_config)
 
     # Health check endpoint
     @app.get("/health")
