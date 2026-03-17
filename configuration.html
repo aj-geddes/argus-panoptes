@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<!-- SEO -->
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Configuration | Argus Panoptes</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Configuration" />
+<meta name="author" content="aj-geddes" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Every configuration option in config/argus.yaml with examples, environment variables, and hot-reload behavior." />
+<meta property="og:description" content="Every configuration option in config/argus.yaml with examples, environment variables, and hot-reload behavior." />
+<link rel="canonical" href="https://aj-geddes.github.io/argus-panoptes/configuration.html" />
+<meta property="og:url" content="https://aj-geddes.github.io/argus-panoptes/configuration.html" />
+<meta property="og:site_name" content="Argus Panoptes" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Configuration" />
+<meta name="twitter:site" content="@" />
+<meta name="twitter:creator" content="@aj-geddes" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","author":{"@type":"Person","name":"aj-geddes"},"description":"Every configuration option in config/argus.yaml with examples, environment variables, and hot-reload behavior.","headline":"Configuration","url":"https://aj-geddes.github.io/argus-panoptes/configuration.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<!-- Canonical -->
+<link rel="canonical" href="https://aj-geddes.github.io/argus-panoptes/configuration.html">
+
+<!-- Open Graph Fallback -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Argus Panoptes">
+
+<meta property="og:description" content="Every configuration option in config/argus.yaml with examples, environment variables, and hot-reload behavior.">
+
+
+<!-- Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Argus Panoptes",
+  "description": "The all-seeing eye for your AI agents. A self-hosted observability platform for LangGraph, CrewAI, OpenAI, and any framework that emits OpenTelemetry GenAI spans.",
+  "url": "https://aj-geddes.github.io/argus-panoptes",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Linux, macOS, Windows",
+  "license": "https://www.apache.org/licenses/LICENSE-2.0",
+  "author": {
+    "@type": "Person",
+    "name": "aj-geddes"
+  },
+  "codeRepository": "https://github.com/aj-geddes/argus-panoptes"
+}
+</script>
+
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%23020617'/%3E%3Ccircle cx='16' cy='16' r='8' fill='%2310b981'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23020617'/%3E%3C/svg%3E">
+
+<!-- JetBrains Mono + Inter -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap">
+
+<!-- Main CSS -->
+<link rel="stylesheet" href="/argus-panoptes/assets/css/main.css">
+
+<!-- Theme color for browser chrome -->
+<meta name="theme-color" content="#020617">
+<meta name="color-scheme" content="dark">
+
+  <title>Configuration — Argus Panoptes</title>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ===== Header ===== -->
+  <header class="site-header" role="banner">
+    <a href="/argus-panoptes/" class="header-brand" aria-label="Argus Panoptes home">
+      <div class="header-brand-icon" aria-hidden="true">&#9673;</div>
+      <span class="header-brand-name">Argus Panoptes</span>
+    </a>
+
+    <nav class="header-nav" aria-label="Header navigation">
+      <a href="/argus-panoptes/getting-started" class="header-link">Docs</a>
+      <a href="/argus-panoptes/api-reference" class="header-link">API</a>
+      <a href="https://github.com/aj-geddes/argus-panoptes"
+         class="header-link github"
+         target="_blank"
+         rel="noopener noreferrer"
+         aria-label="View on GitHub">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+        </svg>
+        GitHub
+      </a>
+
+      <!-- Mobile hamburger -->
+      <button class="menu-toggle"
+              id="menu-toggle"
+              aria-controls="site-sidebar"
+              aria-expanded="false"
+              aria-label="Toggle navigation menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- ===== Sidebar ===== -->
+  <nav class="site-sidebar" id="site-sidebar" aria-label="Documentation navigation">
+  <div class="nav-section">
+    <p class="nav-section-title">Overview</p>
+    <a href="/argus-panoptes/"
+       class="nav-link ">
+      <span class="nav-link-icon">&#9673;</span>
+      Home
+    </a>
+    <a href="/argus-panoptes/getting-started"
+       class="nav-link ">
+      <span class="nav-link-icon">&#9658;</span>
+      Getting Started
+    </a>
+  </div>
+
+  <div class="nav-divider"></div>
+
+  <div class="nav-section">
+    <p class="nav-section-title">Reference</p>
+    <a href="/argus-panoptes/api-reference"
+       class="nav-link ">
+      <span class="nav-link-icon">&lt;/&gt;</span>
+      API Reference
+    </a>
+    <a href="/argus-panoptes/configuration"
+       class="nav-link active">
+      <span class="nav-link-icon">&#9881;</span>
+      Configuration
+    </a>
+    <a href="/argus-panoptes/sdk"
+       class="nav-link ">
+      <span class="nav-link-icon">&#9670;</span>
+      Python SDK
+    </a>
+  </div>
+
+  <div class="nav-divider"></div>
+
+  <div class="nav-section">
+    <p class="nav-section-title">Deep Dive</p>
+    <a href="/argus-panoptes/architecture"
+       class="nav-link ">
+      <span class="nav-link-icon">&#9648;</span>
+      Architecture
+    </a>
+    <a href="/argus-panoptes/deployment"
+       class="nav-link ">
+      <span class="nav-link-icon">&#9749;</span>
+      Deployment
+    </a>
+    <a href="/argus-panoptes/user-guide"
+       class="nav-link ">
+      <span class="nav-link-icon">&#9781;</span>
+      User Guide
+    </a>
+  </div>
+
+  <div class="nav-divider"></div>
+
+  <div class="nav-section">
+    <p class="nav-section-title">Project</p>
+    <a href="/argus-panoptes/contributing"
+       class="nav-link ">
+      <span class="nav-link-icon">&#9774;</span>
+      Contributing
+    </a>
+    <a href="/argus-panoptes/changelog"
+       class="nav-link ">
+      <span class="nav-link-icon">&#9863;</span>
+      Changelog
+    </a>
+    <a href="https://github.com/aj-geddes/argus-panoptes"
+       class="nav-link"
+       target="_blank"
+       rel="noopener noreferrer">
+      <span class="nav-link-icon">&#9651;</span>
+      GitHub
+    </a>
+  </div>
+</nav>
+
+<!-- Sidebar overlay for mobile -->
+<div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+
+
+  <!-- ===== Main Content ===== -->
+  <main class="site-main" id="main-content" role="main">
+    
+    <div style="display:none;" class="edit-on-github-wrapper">
+      <!-- Edit on GitHub link is rendered in _layouts/page.html for each content page -->
+      <a href="https://github.com/aj-geddes/argus-panoptes/edit/main/docs/configuration.md"
+         class="edit-on-github"
+         target="_blank"
+         rel="noopener noreferrer">Edit on GitHub</a>
+    </div>
+    
+    <div class="content-wrapper">
+  <header class="page-header">
+    <h1>Configuration</h1>
+    
+    <p class="page-description">Every configuration option in config/argus.yaml with examples, environment variables, and hot-reload behavior.</p>
+    
+    <a href="https://github.com/aj-geddes/argus-panoptes/edit/main/docs/configuration.md"
+       class="edit-on-github"
+       target="_blank"
+       rel="noopener noreferrer"
+       aria-label="Edit this page on GitHub">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+      </svg>
+      Edit on GitHub
+    </a>
+  </header>
+
+  <article class="prose">
+    <p>All Argus Panoptes configuration lives in <code class="language-plaintext highlighter-rouge">config/argus.yaml</code>. The file is
+<strong>hot-reloaded</strong> — edit it while the server is running and changes apply
+immediately with zero downtime. Invalid YAML is rejected and the old config
+stays active.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cp </span>config/argus.example.yaml config/argus.yaml
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="server">server</h2>
+
+<p>Controls the FastAPI/Uvicorn server.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">server</span><span class="pi">:</span>
+  <span class="na">host</span><span class="pi">:</span> <span class="s2">"</span><span class="s">0.0.0.0"</span>
+  <span class="na">port</span><span class="pi">:</span> <span class="m">8000</span>
+  <span class="na">workers</span><span class="pi">:</span> <span class="m">4</span>
+  <span class="na">log_level</span><span class="pi">:</span> <span class="s2">"</span><span class="s">INFO"</span>
+</code></pre></div></div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Setting</th>
+      <th>Type</th>
+      <th>Default</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">host</code></td>
+      <td>string</td>
+      <td><code class="language-plaintext highlighter-rouge">"0.0.0.0"</code></td>
+      <td>Bind address</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">port</code></td>
+      <td>int</td>
+      <td><code class="language-plaintext highlighter-rouge">8000</code></td>
+      <td>HTTP port</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">workers</code></td>
+      <td>int</td>
+      <td><code class="language-plaintext highlighter-rouge">4</code></td>
+      <td>Uvicorn worker processes</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">log_level</code></td>
+      <td>string</td>
+      <td><code class="language-plaintext highlighter-rouge">"INFO"</code></td>
+      <td>Log level: <code class="language-plaintext highlighter-rouge">DEBUG</code>, <code class="language-plaintext highlighter-rouge">INFO</code>, <code class="language-plaintext highlighter-rouge">WARNING</code>, <code class="language-plaintext highlighter-rouge">ERROR</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="database">database</h2>
+
+<p>Configures the database backend.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">database</span><span class="pi">:</span>
+  <span class="na">url</span><span class="pi">:</span> <span class="s2">"</span><span class="s">sqlite+aiosqlite:///./argus.db"</span>
+  <span class="c1"># url: "postgresql+asyncpg://user:pass@localhost/argus"</span>
+  <span class="na">pool_size</span><span class="pi">:</span> <span class="m">10</span>
+</code></pre></div></div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Setting</th>
+      <th>Type</th>
+      <th>Default</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">url</code></td>
+      <td>string</td>
+      <td>SQLite</td>
+      <td>SQLAlchemy async database URL</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">pool_size</code></td>
+      <td>int</td>
+      <td><code class="language-plaintext highlighter-rouge">10</code></td>
+      <td>Connection pool size (PostgreSQL)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Environment variable override:</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">DATABASE_URL</span><span class="o">=</span><span class="s2">"postgresql+asyncpg://user:pass@localhost:5432/argus"</span>
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">DATABASE_URL</code> environment variable takes precedence over the config file.</p>
+
+<hr />
+
+<h2 id="ingestion">ingestion</h2>
+
+<p>Controls the span ingestion endpoints.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">ingestion</span><span class="pi">:</span>
+  <span class="na">otlp_enabled</span><span class="pi">:</span> <span class="no">true</span>
+  <span class="na">otlp_port</span><span class="pi">:</span> <span class="m">4318</span>
+  <span class="na">rest_enabled</span><span class="pi">:</span> <span class="no">true</span>
+  <span class="na">max_batch_size</span><span class="pi">:</span> <span class="m">1000</span>
+  <span class="na">flush_interval_seconds</span><span class="pi">:</span> <span class="m">5</span>
+</code></pre></div></div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Setting</th>
+      <th>Type</th>
+      <th>Default</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">otlp_enabled</code></td>
+      <td>bool</td>
+      <td><code class="language-plaintext highlighter-rouge">true</code></td>
+      <td>Enable OTLP/HTTP collector on <code class="language-plaintext highlighter-rouge">otlp_port</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">otlp_port</code></td>
+      <td>int</td>
+      <td><code class="language-plaintext highlighter-rouge">4318</code></td>
+      <td>OTLP/HTTP listen port</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">rest_enabled</code></td>
+      <td>bool</td>
+      <td><code class="language-plaintext highlighter-rouge">true</code></td>
+      <td>Enable <code class="language-plaintext highlighter-rouge">POST /v1/traces</code> REST endpoint</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">max_batch_size</code></td>
+      <td>int</td>
+      <td><code class="language-plaintext highlighter-rouge">1000</code></td>
+      <td>Maximum spans per ingestion request</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">flush_interval_seconds</code></td>
+      <td>int</td>
+      <td><code class="language-plaintext highlighter-rouge">5</code></td>
+      <td>SDK batch flush interval</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="metrics">metrics</h2>
+
+<p>Controls metrics aggregation and retention.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">metrics</span><span class="pi">:</span>
+  <span class="na">aggregation_windows</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">1m"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">5m"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">1h"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">1d"</span><span class="pi">]</span>
+  <span class="na">retention_days</span><span class="pi">:</span> <span class="m">90</span>
+  <span class="na">snapshot_interval_seconds</span><span class="pi">:</span> <span class="m">60</span>
+</code></pre></div></div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Setting</th>
+      <th>Type</th>
+      <th>Default</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">aggregation_windows</code></td>
+      <td>list</td>
+      <td><code class="language-plaintext highlighter-rouge">["1m","5m","1h","1d"]</code></td>
+      <td>Time windows for pre-aggregated snapshots</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">retention_days</code></td>
+      <td>int</td>
+      <td><code class="language-plaintext highlighter-rouge">90</code></td>
+      <td>How long to keep raw trace data</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">snapshot_interval_seconds</code></td>
+      <td>int</td>
+      <td><code class="language-plaintext highlighter-rouge">60</code></td>
+      <td>How often to compute metric snapshots</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="cost_model">cost_model</h2>
+
+<p>Per-provider, per-model token pricing (USD per million tokens).</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">cost_model</span><span class="pi">:</span>
+  <span class="na">providers</span><span class="pi">:</span>
+    <span class="na">openai</span><span class="pi">:</span>
+      <span class="na">gpt-4o</span><span class="pi">:</span>      <span class="pi">{</span> <span class="nv">input</span><span class="pi">:</span> <span class="nv">2.50</span><span class="pi">,</span> <span class="nv">output</span><span class="pi">:</span> <span class="nv">10.00</span> <span class="pi">}</span>
+      <span class="na">gpt-4o-mini</span><span class="pi">:</span> <span class="pi">{</span> <span class="nv">input</span><span class="pi">:</span> <span class="nv">0.15</span><span class="pi">,</span> <span class="nv">output</span><span class="pi">:</span> <span class="nv">0.60</span> <span class="pi">}</span>
+    <span class="na">anthropic</span><span class="pi">:</span>
+      <span class="na">claude-sonnet-4-6</span><span class="pi">:</span> <span class="pi">{</span> <span class="nv">input</span><span class="pi">:</span> <span class="nv">3.00</span><span class="pi">,</span> <span class="nv">output</span><span class="pi">:</span> <span class="nv">15.00</span> <span class="pi">}</span>
+    <span class="na">google</span><span class="pi">:</span>
+      <span class="na">gemini-2.5-pro</span><span class="pi">:</span> <span class="pi">{</span> <span class="nv">input</span><span class="pi">:</span> <span class="nv">1.25</span><span class="pi">,</span> <span class="nv">output</span><span class="pi">:</span> <span class="nv">10.00</span> <span class="pi">}</span>
+    <span class="na">deepseek</span><span class="pi">:</span>
+      <span class="na">deepseek-v3.2</span><span class="pi">:</span> <span class="pi">{</span> <span class="nv">input</span><span class="pi">:</span> <span class="nv">0.28</span><span class="pi">,</span> <span class="nv">output</span><span class="pi">:</span> <span class="nv">0.42</span> <span class="pi">}</span>
+    <span class="na">xai</span><span class="pi">:</span>
+      <span class="na">grok-3</span><span class="pi">:</span> <span class="pi">{</span> <span class="nv">input</span><span class="pi">:</span> <span class="nv">3.00</span><span class="pi">,</span> <span class="nv">output</span><span class="pi">:</span> <span class="nv">15.00</span> <span class="pi">}</span>
+    <span class="na">mistral</span><span class="pi">:</span>
+      <span class="na">mistral-large</span><span class="pi">:</span> <span class="pi">{</span> <span class="nv">input</span><span class="pi">:</span> <span class="nv">2.00</span><span class="pi">,</span> <span class="nv">output</span><span class="pi">:</span> <span class="nv">6.00</span> <span class="pi">}</span>
+    <span class="na">meta</span><span class="pi">:</span>
+      <span class="na">llama-4-maverick</span><span class="pi">:</span> <span class="pi">{</span> <span class="nv">input</span><span class="pi">:</span> <span class="nv">0.20</span><span class="pi">,</span> <span class="nv">output</span><span class="pi">:</span> <span class="nv">0.60</span> <span class="pi">}</span>
+</code></pre></div></div>
+
+<p>All prices are <strong>USD per million tokens</strong>. Add any model by adding a key.
+The provider name is matched against the <code class="language-plaintext highlighter-rouge">gen_ai.provider.name</code> span attribute.
+The model name is matched against <code class="language-plaintext highlighter-rouge">gen_ai.request.model</code>.</p>
+
+<p>If a model is not found in the pricing table, cost is reported as <code class="language-plaintext highlighter-rouge">null</code>.</p>
+
+<hr />
+
+<h2 id="security">security</h2>
+
+<p>Controls API key authentication and rate limiting.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">security</span><span class="pi">:</span>
+  <span class="na">api_key_auth</span><span class="pi">:</span>
+    <span class="na">enabled</span><span class="pi">:</span> <span class="no">false</span>
+    <span class="na">header_name</span><span class="pi">:</span> <span class="s2">"</span><span class="s">X-API-Key"</span>
+    <span class="c1"># key: "your-secret-api-key"  # Or set ARGUS_API_KEY env var</span>
+
+  <span class="na">rate_limiting</span><span class="pi">:</span>
+    <span class="na">enabled</span><span class="pi">:</span> <span class="no">false</span>
+    <span class="na">requests_per_window</span><span class="pi">:</span> <span class="m">1000</span>
+    <span class="na">window_seconds</span><span class="pi">:</span> <span class="m">60</span>
+</code></pre></div></div>
+
+<h3 id="api_key_auth">api_key_auth</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Setting</th>
+      <th>Type</th>
+      <th>Default</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">enabled</code></td>
+      <td>bool</td>
+      <td><code class="language-plaintext highlighter-rouge">false</code></td>
+      <td>Require API key on all ingestion endpoints</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">header_name</code></td>
+      <td>string</td>
+      <td><code class="language-plaintext highlighter-rouge">"X-API-Key"</code></td>
+      <td>Request header to read the key from</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">key</code></td>
+      <td>string</td>
+      <td>—</td>
+      <td>The expected API key value</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Environment variable:</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">ARGUS_API_KEY</span><span class="o">=</span><span class="s2">"your-secret-api-key"</span>
+</code></pre></div></div>
+
+<p>Keys are compared in constant time to prevent timing attacks.</p>
+
+<h3 id="rate_limiting">rate_limiting</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Setting</th>
+      <th>Type</th>
+      <th>Default</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">enabled</code></td>
+      <td>bool</td>
+      <td><code class="language-plaintext highlighter-rouge">false</code></td>
+      <td>Enable per-client rate limiting</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">requests_per_window</code></td>
+      <td>int</td>
+      <td><code class="language-plaintext highlighter-rouge">1000</code></td>
+      <td>Max requests per time window</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">window_seconds</code></td>
+      <td>int</td>
+      <td><code class="language-plaintext highlighter-rouge">60</code></td>
+      <td>Rate limit window duration</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="alerts">alerts</h2>
+
+<p>Rule-based alerting with configurable conditions.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">alerts</span><span class="pi">:</span>
+  <span class="na">enabled</span><span class="pi">:</span> <span class="no">true</span>
+  <span class="na">check_interval_seconds</span><span class="pi">:</span> <span class="m">30</span>
+  <span class="na">rules</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s2">"</span><span class="s">High</span><span class="nv"> </span><span class="s">error</span><span class="nv"> </span><span class="s">rate"</span>
+      <span class="na">condition</span><span class="pi">:</span> <span class="s2">"</span><span class="s">error_rate</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">0.10"</span>
+      <span class="na">window</span><span class="pi">:</span> <span class="s2">"</span><span class="s">5m"</span>
+      <span class="na">severity</span><span class="pi">:</span> <span class="s2">"</span><span class="s">critical"</span>
+      <span class="na">notify</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">webhook"</span><span class="pi">]</span>
+
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Cost</span><span class="nv"> </span><span class="s">spike"</span>
+      <span class="na">condition</span><span class="pi">:</span> <span class="s2">"</span><span class="s">cost_usd_per_hour</span><span class="nv"> </span><span class="s">&gt;</span><span class="nv"> </span><span class="s">50.00"</span>
+      <span class="na">window</span><span class="pi">:</span> <span class="s2">"</span><span class="s">1h"</span>
+      <span class="na">severity</span><span class="pi">:</span> <span class="s2">"</span><span class="s">warning"</span>
+      <span class="na">notify</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">webhook"</span><span class="pi">]</span>
+</code></pre></div></div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Setting</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">enabled</code></td>
+      <td>bool</td>
+      <td>Enable the alert engine</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">check_interval_seconds</code></td>
+      <td>int</td>
+      <td>How often to evaluate rules</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">rules[].name</code></td>
+      <td>string</td>
+      <td>Human-readable rule name</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">rules[].condition</code></td>
+      <td>string</td>
+      <td>Alert expression (see below)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">rules[].window</code></td>
+      <td>string</td>
+      <td>Aggregation window: <code class="language-plaintext highlighter-rouge">1m</code>, <code class="language-plaintext highlighter-rouge">5m</code>, <code class="language-plaintext highlighter-rouge">1h</code>, <code class="language-plaintext highlighter-rouge">1d</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">rules[].severity</code></td>
+      <td>string</td>
+      <td><code class="language-plaintext highlighter-rouge">critical</code>, <code class="language-plaintext highlighter-rouge">warning</code>, <code class="language-plaintext highlighter-rouge">info</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">rules[].notify</code></td>
+      <td>list</td>
+      <td>Notification channels: <code class="language-plaintext highlighter-rouge">["webhook"]</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="alert-conditions">Alert Conditions</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Variable</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">error_rate</code></td>
+      <td>Fraction of spans with errors (0.0 – 1.0)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">cost_usd_per_hour</code></td>
+      <td>Projected hourly cost in USD</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">p95_latency_ms</code></td>
+      <td>95th percentile latency in milliseconds</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">p99_latency_ms</code></td>
+      <td>99th percentile latency in milliseconds</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">total_spans</code></td>
+      <td>Total span count in the window</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Supported operators: <code class="language-plaintext highlighter-rouge">&gt;</code>, <code class="language-plaintext highlighter-rouge">&lt;</code>, <code class="language-plaintext highlighter-rouge">&gt;=</code>, <code class="language-plaintext highlighter-rouge">&lt;=</code>, <code class="language-plaintext highlighter-rouge">==</code>, <code class="language-plaintext highlighter-rouge">!=</code>.</p>
+
+<hr />
+
+<h2 id="webhooks">webhooks</h2>
+
+<p>HTTP webhook destinations for alert notifications.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">webhooks</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s2">"</span><span class="s">slack-alerts"</span>
+    <span class="na">url</span><span class="pi">:</span> <span class="s2">"</span><span class="s">${SLACK_WEBHOOK_URL}"</span>
+    <span class="na">events</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">alert.fired"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">alert.resolved"</span><span class="pi">]</span>
+</code></pre></div></div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Setting</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">name</code></td>
+      <td>string</td>
+      <td>Identifier for logs</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">url</code></td>
+      <td>string</td>
+      <td>HTTP endpoint (supports <code class="language-plaintext highlighter-rouge">${ENV_VAR}</code> substitution)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">events</code></td>
+      <td>list</td>
+      <td>Which events to send: <code class="language-plaintext highlighter-rouge">alert.fired</code>, <code class="language-plaintext highlighter-rouge">alert.resolved</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Webhook payload:</strong></p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"alert.fired"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"rule"</span><span class="p">:</span><span class="w"> </span><span class="s2">"High error rate"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"severity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"critical"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"condition"</span><span class="p">:</span><span class="w"> </span><span class="s2">"error_rate &gt; 0.10"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"current_value"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.14</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"window"</span><span class="p">:</span><span class="w"> </span><span class="s2">"5m"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"fired_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-03-17T09:30:00Z"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<hr />
+
+<h2 id="agents">agents</h2>
+
+<p>Controls agent auto-registration behavior.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">agents</span><span class="pi">:</span>
+  <span class="na">auto_register</span><span class="pi">:</span> <span class="no">true</span>
+  <span class="na">default_tags</span><span class="pi">:</span>
+    <span class="na">environment</span><span class="pi">:</span> <span class="s2">"</span><span class="s">production"</span>
+</code></pre></div></div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Setting</th>
+      <th>Type</th>
+      <th>Default</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">auto_register</code></td>
+      <td>bool</td>
+      <td><code class="language-plaintext highlighter-rouge">true</code></td>
+      <td>Automatically register new agents from incoming spans</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">default_tags</code></td>
+      <td>map</td>
+      <td><code class="language-plaintext highlighter-rouge">{}</code></td>
+      <td>Tags applied to all auto-registered agents</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="dashboard">dashboard</h2>
+
+<p>Controls the real-time dashboard behavior and chart layout.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">dashboard</span><span class="pi">:</span>
+  <span class="na">refresh_interval_seconds</span><span class="pi">:</span> <span class="m">5</span>
+  <span class="na">default_time_range</span><span class="pi">:</span> <span class="s2">"</span><span class="s">1h"</span>
+  <span class="na">charts</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s2">"</span><span class="s">token_usage"</span>
+      <span class="na">title</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Token</span><span class="nv"> </span><span class="s">consumption"</span>
+      <span class="na">position</span><span class="pi">:</span> <span class="pi">{</span> <span class="nv">row</span><span class="pi">:</span> <span class="nv">1</span><span class="pi">,</span> <span class="nv">col</span><span class="pi">:</span> <span class="nv">1</span><span class="pi">,</span> <span class="nv">width</span><span class="pi">:</span> <span class="nv">2</span> <span class="pi">}</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s2">"</span><span class="s">cost_breakdown"</span>
+      <span class="na">title</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Cost</span><span class="nv"> </span><span class="s">by</span><span class="nv"> </span><span class="s">agent"</span>
+      <span class="na">position</span><span class="pi">:</span> <span class="pi">{</span> <span class="nv">row</span><span class="pi">:</span> <span class="nv">1</span><span class="pi">,</span> <span class="nv">col</span><span class="pi">:</span> <span class="nv">3</span><span class="pi">,</span> <span class="nv">width</span><span class="pi">:</span> <span class="nv">1</span> <span class="pi">}</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s2">"</span><span class="s">latency_percentiles"</span>
+      <span class="na">title</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Response</span><span class="nv"> </span><span class="s">latency"</span>
+      <span class="na">position</span><span class="pi">:</span> <span class="pi">{</span> <span class="nv">row</span><span class="pi">:</span> <span class="nv">2</span><span class="pi">,</span> <span class="nv">col</span><span class="pi">:</span> <span class="nv">1</span><span class="pi">,</span> <span class="nv">width</span><span class="pi">:</span> <span class="nv">1</span> <span class="pi">}</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s2">"</span><span class="s">error_rate"</span>
+      <span class="na">title</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Error</span><span class="nv"> </span><span class="s">rate"</span>
+      <span class="na">position</span><span class="pi">:</span> <span class="pi">{</span> <span class="nv">row</span><span class="pi">:</span> <span class="nv">2</span><span class="pi">,</span> <span class="nv">col</span><span class="pi">:</span> <span class="nv">2</span><span class="pi">,</span> <span class="nv">width</span><span class="pi">:</span> <span class="nv">1</span> <span class="pi">}</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s2">"</span><span class="s">tool_success"</span>
+      <span class="na">title</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Tool</span><span class="nv"> </span><span class="s">call</span><span class="nv"> </span><span class="s">success"</span>
+      <span class="na">position</span><span class="pi">:</span> <span class="pi">{</span> <span class="nv">row</span><span class="pi">:</span> <span class="nv">2</span><span class="pi">,</span> <span class="nv">col</span><span class="pi">:</span> <span class="nv">3</span><span class="pi">,</span> <span class="nv">width</span><span class="pi">:</span> <span class="nv">1</span> <span class="pi">}</span>
+</code></pre></div></div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Setting</th>
+      <th>Type</th>
+      <th>Default</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">refresh_interval_seconds</code></td>
+      <td>int</td>
+      <td><code class="language-plaintext highlighter-rouge">5</code></td>
+      <td>SSE push interval for dashboard updates</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">default_time_range</code></td>
+      <td>string</td>
+      <td><code class="language-plaintext highlighter-rouge">"1h"</code></td>
+      <td>Default time window shown on load</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">charts[].type</code></td>
+      <td>string</td>
+      <td>—</td>
+      <td>Chart type (see below)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">charts[].title</code></td>
+      <td>string</td>
+      <td>—</td>
+      <td>Display title</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">charts[].position</code></td>
+      <td>map</td>
+      <td>—</td>
+      <td>Grid position: <code class="language-plaintext highlighter-rouge">row</code>, <code class="language-plaintext highlighter-rouge">col</code>, <code class="language-plaintext highlighter-rouge">width</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Available chart types:</strong> <code class="language-plaintext highlighter-rouge">token_usage</code>, <code class="language-plaintext highlighter-rouge">cost_breakdown</code>, <code class="language-plaintext highlighter-rouge">latency_percentiles</code>,
+<code class="language-plaintext highlighter-rouge">error_rate</code>, <code class="language-plaintext highlighter-rouge">tool_success</code>, <code class="language-plaintext highlighter-rouge">agent_list</code>, <code class="language-plaintext highlighter-rouge">trace_list</code>.</p>
+
+<hr />
+
+<h2 id="environment-variables">Environment Variables</h2>
+
+<p>All secrets should be provided via environment variables rather than hardcoded
+in the config file.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Variable</th>
+      <th>Description</th>
+      <th>Config equivalent</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">DATABASE_URL</code></td>
+      <td>Database connection URL</td>
+      <td><code class="language-plaintext highlighter-rouge">database.url</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">ARGUS_API_KEY</code></td>
+      <td>API authentication key</td>
+      <td><code class="language-plaintext highlighter-rouge">security.api_key_auth.key</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">SLACK_WEBHOOK_URL</code></td>
+      <td>Slack incoming webhook URL</td>
+      <td>Used in <code class="language-plaintext highlighter-rouge">webhooks[].url</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Environment variables take precedence over config file values.</p>
+
+<hr />
+
+<h2 id="hot-reload-behavior">Hot-Reload Behavior</h2>
+
+<p>The config watcher monitors <code class="language-plaintext highlighter-rouge">config/argus.yaml</code> using <code class="language-plaintext highlighter-rouge">watchdog</code>. When the file
+changes:</p>
+
+<ol>
+  <li>The file is parsed and validated with Pydantic</li>
+  <li>If valid: alert rules and cost models are updated in-place, no restart needed</li>
+  <li>If invalid: the error is logged and the previous config remains active</li>
+</ol>
+
+<p>Changes to <code class="language-plaintext highlighter-rouge">server.host</code>, <code class="language-plaintext highlighter-rouge">server.port</code>, and <code class="language-plaintext highlighter-rouge">server.workers</code> require a server
+restart to take effect — all other settings are hot-reloadable.</p>
+
+  </article>
+</div>
+
+  </main>
+
+</div><!-- /.layout -->
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+  <p class="footer-copy">
+    &copy; 2026 Argus Panoptes contributors.
+    Licensed under the
+    <a href="https://github.com/aj-geddes/argus-panoptes/blob/main/LICENSE"
+       class="footer-link"
+       target="_blank" rel="noopener">Apache 2.0 License</a>.
+  </p>
+
+  <nav class="footer-links" aria-label="Footer links">
+    <a href="https://github.com/aj-geddes/argus-panoptes"
+       class="footer-link"
+       target="_blank" rel="noopener noreferrer">GitHub</a>
+    <a href="https://github.com/aj-geddes/argus-panoptes/issues"
+       class="footer-link"
+       target="_blank" rel="noopener noreferrer">Issues</a>
+    <a href="https://github.com/aj-geddes/argus-panoptes/releases"
+       class="footer-link"
+       target="_blank" rel="noopener noreferrer">Releases</a>
+    <a href="/argus-panoptes/changelog" class="footer-link">Changelog</a>
+    <a href="/argus-panoptes/contributing" class="footer-link">Contributing</a>
+  </nav>
+</footer>
+
+
+<!-- ===== Mermaid.js ===== -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      primaryColor:       '#0f172a',
+      primaryTextColor:   '#f1f5f9',
+      primaryBorderColor: '#334155',
+      lineColor:          '#64748b',
+      secondaryColor:     '#1e293b',
+      tertiaryColor:      '#1e293b',
+      background:         '#020617',
+      mainBkg:            '#0f172a',
+      nodeBorder:         '#334155',
+      clusterBkg:         '#0f172a',
+      titleColor:         '#34d399',
+      edgeLabelBackground:'#1e293b',
+      activeTaskBkgColor: '#10b981',
+      activeTaskBorderColor: '#34d399',
+    },
+    flowchart: { curve: 'basis' },
+    sequence: {
+      actorFontFamily: 'Inter, sans-serif',
+      noteFontFamily:  'Inter, sans-serif',
+      messageFontFamily: 'Inter, sans-serif',
+    },
+  });
+</script>
+
+<!-- ===== Mobile Sidebar Toggle ===== -->
+<script>
+(function () {
+  var toggle   = document.getElementById('menu-toggle');
+  var sidebar  = document.getElementById('site-sidebar');
+  var overlay  = document.getElementById('sidebar-overlay');
+  var sidebar_toggle_class = 'is-open';
+  var overlay_visible_class = 'is-visible';
+
+  if (!toggle || !sidebar || !overlay) return;
+
+  function openSidebar() {
+    sidebar.classList.add(sidebar_toggle_class);
+    overlay.classList.add(overlay_visible_class);
+    toggle.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeSidebar() {
+    sidebar.classList.remove(sidebar_toggle_class);
+    overlay.classList.remove(overlay_visible_class);
+    toggle.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+
+  toggle.addEventListener('click', function () {
+    if (sidebar.classList.contains(sidebar_toggle_class)) {
+      closeSidebar();
+    } else {
+      openSidebar();
+    }
+  });
+
+  overlay.addEventListener('click', closeSidebar);
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeSidebar();
+  });
+}());
+</script>
+
+<!-- ===== Active nav highlight ===== -->
+<script>
+(function () {
+  var links = document.querySelectorAll('.nav-link');
+  var path  = window.location.pathname;
+  links.forEach(function (link) {
+    if (link.getAttribute('href') === path ||
+        (path.length > 1 && link.getAttribute('href') && path.startsWith(link.getAttribute('href')))) {
+      link.classList.add('active');
+    }
+  });
+}());
+</script>
+
+</body>
+</html>

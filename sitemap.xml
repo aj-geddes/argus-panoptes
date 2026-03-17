@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url>
+<loc>https://aj-geddes.github.io/argus-panoptes/api-reference.html</loc>
+</url>
+<url>
+<loc>https://aj-geddes.github.io/argus-panoptes/architecture.html</loc>
+</url>
+<url>
+<loc>https://aj-geddes.github.io/argus-panoptes/changelog.html</loc>
+</url>
+<url>
+<loc>https://aj-geddes.github.io/argus-panoptes/configuration.html</loc>
+</url>
+<url>
+<loc>https://aj-geddes.github.io/argus-panoptes/contributing.html</loc>
+</url>
+<url>
+<loc>https://aj-geddes.github.io/argus-panoptes/deployment.html</loc>
+</url>
+<url>
+<loc>https://aj-geddes.github.io/argus-panoptes/getting-started.html</loc>
+</url>
+<url>
+<loc>https://aj-geddes.github.io/argus-panoptes/</loc>
+</url>
+<url>
+<loc>https://aj-geddes.github.io/argus-panoptes/sdk.html</loc>
+</url>
+<url>
+<loc>https://aj-geddes.github.io/argus-panoptes/user-guide.html</loc>
+</url>
+</urlset>
