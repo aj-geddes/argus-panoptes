@@ -29,7 +29,7 @@ class ConfigManager:
         self._hash: str = ""
         self._lock: threading.RLock = threading.RLock()
         self._on_change: Callable[[dict[str, Any]], None] | None = on_change
-        self._observer: Observer | None = None
+        self._observer: Any = None
         self._load()
 
     def _load(self) -> bool:

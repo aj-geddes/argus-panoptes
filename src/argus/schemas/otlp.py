@@ -37,7 +37,7 @@ class SpanData(BaseModel):
     attributes: list[Attribute] = Field(default_factory=list)
     startTimeUnixNano: str = "0"
     endTimeUnixNano: str | None = None
-    status: dict | None = None
+    status: dict[str, str] | None = None
 
 
 class ScopeSpans(BaseModel):

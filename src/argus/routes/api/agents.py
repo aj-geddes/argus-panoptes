@@ -85,7 +85,7 @@ async def get_agent_metrics(
     span_count_q = (
         select(func.count())
         .select_from(Span)
-        .join(Trace, Span.trace_id == Trace.id)
+        .join(Trace, Span.trace_id == Trace.id)  # type: ignore[arg-type]
         .where(Trace.agent_id == agent_id, Span.started_at >= time_start)
     )
     result = await session.execute(span_count_q)
@@ -93,7 +93,7 @@ async def get_agent_metrics(
 
     token_q = (
         select(func.coalesce(func.sum(Span.total_tokens), 0))
-        .join(Trace, Span.trace_id == Trace.id)
+        .join(Trace, Span.trace_id == Trace.id)  # type: ignore[arg-type]
         .where(Trace.agent_id == agent_id, Span.started_at >= time_start)
     )
     result = await session.execute(token_q)
@@ -101,7 +101,7 @@ async def get_agent_metrics(
 
     cost_q = (
         select(func.coalesce(func.sum(Span.cost_usd), 0.0))
-        .join(Trace, Span.trace_id == Trace.id)
+        .join(Trace, Span.trace_id == Trace.id)  # type: ignore[arg-type]
         .where(Trace.agent_id == agent_id, Span.started_at >= time_start)
     )
     result = await session.execute(cost_q)
@@ -109,7 +109,7 @@ async def get_agent_metrics(
 
     latency_q = (
         select(func.coalesce(func.avg(Span.latency_ms), 0.0))
-        .join(Trace, Span.trace_id == Trace.id)
+        .join(Trace, Span.trace_id == Trace.id)  # type: ignore[arg-type]
         .where(
             Trace.agent_id == agent_id,
             Span.started_at >= time_start,

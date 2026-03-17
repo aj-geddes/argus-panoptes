@@ -1,0 +1,55 @@
+# Pre-commit hooks — these run the SAME checks as CI (.github/workflows/ci.yml).
+# CI uses --check (no auto-fix); pre-commit uses --fix where safe.
+#
+# To install: pre-commit install
+# To run all: pre-commit run --all-files
+
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.6
+    hooks:
+      # Ruff lint — mirrors CI "ruff check src/ tests/"
+      # Uses --fix locally for convenience; CI runs without --fix to enforce.
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+        types_or: [python, pyi]
+      # Ruff format — mirrors CI "ruff format --check src/ tests/"
+      - id: ruff-format
+        types_or: [python, pyi]
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.16.1
+    hooks:
+      # Mypy — mirrors CI "mypy src/argus/"
+      - id: mypy
+        pass_filenames: false
+        args: [src/argus/]
+        additional_dependencies:
+          - pydantic>=2.10
+          - fastapi>=0.115
+          - sqlmodel>=0.0.22
+          - sqlalchemy[asyncio]>=2.0
+          - httpx>=0.28
+          - sse-starlette>=2.2
+          - types-PyYAML
+          - watchdog>=6.0
+
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.9.4
+    hooks:
+      # Bandit — mirrors CI "bandit -r src/argus/ -c pyproject.toml"
+      - id: bandit
+        args: [-r, src/argus/, -c, pyproject.toml]
+        pass_filenames: false
+
+  - repo: local
+    hooks:
+      # Pytest — mirrors CI "pytest --cov=src/argus"
+      # Runs full suite to ensure nothing is broken before push.
+      - id: pytest
+        name: pytest
+        entry: pytest --cov=src/argus --cov-report=term-missing -q
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]

@@ -35,7 +35,7 @@ class MetricsService:
         # Query spans in the time window for this agent
         span_query = (
             select(Span)
-            .join(Trace, Span.trace_id == Trace.id)
+            .join(Trace, Span.trace_id == Trace.id)  # type: ignore[arg-type]
             .where(
                 Trace.agent_id == agent_id,
                 Span.started_at >= window_start,
@@ -90,8 +90,8 @@ class MetricsService:
         tool_query = (
             select(func.count())
             .select_from(ToolCall)
-            .join(Span, ToolCall.span_id == Span.id)
-            .join(Trace, Span.trace_id == Trace.id)
+            .join(Span, ToolCall.span_id == Span.id)  # type: ignore[arg-type]
+            .join(Trace, Span.trace_id == Trace.id)  # type: ignore[arg-type]
             .where(
                 Trace.agent_id == agent_id,
                 ToolCall.called_at >= window_start,
@@ -104,8 +104,8 @@ class MetricsService:
         tool_failed_query = (
             select(func.count())
             .select_from(ToolCall)
-            .join(Span, ToolCall.span_id == Span.id)
-            .join(Trace, Span.trace_id == Trace.id)
+            .join(Span, ToolCall.span_id == Span.id)  # type: ignore[arg-type]
+            .join(Trace, Span.trace_id == Trace.id)  # type: ignore[arg-type]
             .where(
                 Trace.agent_id == agent_id,
                 ToolCall.called_at >= window_start,
@@ -152,9 +152,7 @@ class MetricsService:
         """Get an aggregated metrics summary across all agents for a time range."""
         # Total spans
         span_count_q = (
-            select(func.count())
-            .select_from(Span)
-            .where(Span.started_at >= time_start, Span.started_at < time_end)
+            select(func.count()).select_from(Span).where(Span.started_at >= time_start, Span.started_at < time_end)
         )
         result = await session.execute(span_count_q)
         total_spans = result.scalar() or 0
@@ -197,9 +195,7 @@ class MetricsService:
 
         # Total traces
         trace_count_q = (
-            select(func.count())
-            .select_from(Trace)
-            .where(Trace.started_at >= time_start, Trace.started_at < time_end)
+            select(func.count()).select_from(Trace).where(Trace.started_at >= time_start, Trace.started_at < time_end)
         )
         result = await session.execute(trace_count_q)
         total_traces = result.scalar() or 0

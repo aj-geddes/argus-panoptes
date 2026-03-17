@@ -8,7 +8,7 @@ from pydantic import BaseModel
 class ServerConfig(BaseModel):
     """Server configuration section."""
 
-    host: str = "0.0.0.0"
+    host: str = "0.0.0.0"  # nosec B104 — intentional for container deployment
     port: int = 8000
     workers: int = 4
     log_level: str = "INFO"

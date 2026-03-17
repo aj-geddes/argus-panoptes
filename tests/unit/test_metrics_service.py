@@ -171,9 +171,7 @@ async def test_aggregate_stores_snapshot(async_session) -> None:
     )
 
     # Verify persisted
-    result = await async_session.execute(
-        select(MetricSnapshot).where(MetricSnapshot.agent_id == agent.id)
-    )
+    result = await async_session.execute(select(MetricSnapshot).where(MetricSnapshot.agent_id == agent.id))
     stored = result.scalars().all()
     assert len(stored) >= 1
 

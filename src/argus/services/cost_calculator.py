@@ -15,9 +15,7 @@ class CostCalculator:
     """Calculates costs for LLM API calls based on config-driven pricing tables."""
 
     def __init__(self, cost_model_config: dict[str, Any]) -> None:
-        self._providers: dict[str, dict[str, dict[str, float]]] = cost_model_config.get(
-            "providers", {}
-        )
+        self._providers: dict[str, dict[str, dict[str, float]]] = cost_model_config.get("providers", {})
 
     def calculate(
         self,

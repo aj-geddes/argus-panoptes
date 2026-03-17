@@ -46,9 +46,7 @@ async def _get_chart_data(
     """Build chart data for the dashboard."""
     # Get spans in time range for charts
     span_query = (
-        select(Span)
-        .where(Span.started_at >= time_start, Span.started_at < time_end)
-        .order_by(Span.started_at)  # type: ignore[attr-defined]
+        select(Span).where(Span.started_at >= time_start, Span.started_at < time_end).order_by(Span.started_at)  # type: ignore[arg-type]
     )
     result = await session.execute(span_query)
     spans = result.scalars().all()
@@ -118,17 +116,13 @@ async def dashboard(
 
     # Avg latency
     latency_result = await session.execute(
-        select(func.coalesce(func.avg(Span.latency_ms), 0.0)).where(
-            Span.started_at >= time_start, Span.latency_ms > 0
-        )
+        select(func.coalesce(func.avg(Span.latency_ms), 0.0)).where(Span.started_at >= time_start, Span.latency_ms > 0)
     )
     avg_latency = latency_result.scalar() or 0.0
 
     # Error count
     error_result = await session.execute(
-        select(func.count())
-        .select_from(Span)
-        .where(Span.started_at >= time_start, Span.status == "error")
+        select(func.count()).select_from(Span).where(Span.started_at >= time_start, Span.status == "error")
     )
     error_count = error_result.scalar() or 0
 
@@ -189,16 +183,12 @@ async def metrics_cards_partial(
     total_cost = cost_result.scalar() or 0.0
 
     latency_result = await session.execute(
-        select(func.coalesce(func.avg(Span.latency_ms), 0.0)).where(
-            Span.started_at >= time_start, Span.latency_ms > 0
-        )
+        select(func.coalesce(func.avg(Span.latency_ms), 0.0)).where(Span.started_at >= time_start, Span.latency_ms > 0)
     )
     avg_latency = latency_result.scalar() or 0.0
 
     error_result = await session.execute(
-        select(func.count())
-        .select_from(Span)
-        .where(Span.started_at >= time_start, Span.status == "error")
+        select(func.count()).select_from(Span).where(Span.started_at >= time_start, Span.status == "error")
     )
     error_count = error_result.scalar() or 0
 

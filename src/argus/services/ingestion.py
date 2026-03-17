@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 from datetime import UTC, datetime
+from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select
@@ -21,7 +22,7 @@ logger = logging.getLogger(__name__)
 _cost_calculator: CostCalculator | None = None
 
 
-def init_cost_calculator(cost_model_config: dict) -> None:
+def init_cost_calculator(cost_model_config: dict[str, Any]) -> None:
     """Initialize the cost calculator with pricing config."""
     global _cost_calculator
     _cost_calculator = CostCalculator(cost_model_config)
@@ -101,9 +102,7 @@ async def process_ingest_request(
 
     for resource_span in request.resourceSpans:
         # Extract agent name from resource attributes
-        agent_name = str(
-            _get_attr(resource_span.resource.attributes, "gen_ai.agent.name") or "unknown"
-        )
+        agent_name = str(_get_attr(resource_span.resource.attributes, "gen_ai.agent.name") or "unknown")
 
         for scope_span in resource_span.scopeSpans:
             for span_data in scope_span.spans:
@@ -112,19 +111,13 @@ async def process_ingest_request(
 
                 # Parse timestamps
                 started_at = _nano_to_datetime(span_data.startTimeUnixNano)
-                ended_at = (
-                    _nano_to_datetime(span_data.endTimeUnixNano)
-                    if span_data.endTimeUnixNano
-                    else None
-                )
+                ended_at = _nano_to_datetime(span_data.endTimeUnixNano) if span_data.endTimeUnixNano else None
 
                 # Get or create trace
                 trace = await get_or_create_trace(session, span_data.traceId, agent.id, started_at)
 
                 # Extract span attributes
-                operation_name = str(
-                    _get_attr(span_data.attributes, "gen_ai.operation.name") or "unknown"
-                )
+                operation_name = str(_get_attr(span_data.attributes, "gen_ai.operation.name") or "unknown")
                 model = _get_attr(span_data.attributes, "gen_ai.request.model")
                 provider = _get_attr(span_data.attributes, "gen_ai.provider.name")
                 input_tokens = _get_attr(span_data.attributes, "gen_ai.usage.input_tokens") or 0
@@ -167,9 +160,7 @@ async def process_ingest_request(
                 # Handle tool calls if present
                 tool_name = _get_attr(span_data.attributes, "gen_ai.tool.name")
                 if tool_name:
-                    tool_type = str(
-                        _get_attr(span_data.attributes, "gen_ai.tool.type") or "function"
-                    )
+                    tool_type = str(_get_attr(span_data.attributes, "gen_ai.tool.type") or "function")
                     tool_call = ToolCall(
                         span_id=span.id,
                         tool_name=str(tool_name),
@@ -190,9 +181,7 @@ async def process_ingest_request(
         try:
             from argus.core.sse import dashboard_broadcaster
 
-            await dashboard_broadcaster.publish(
-                {"event": "metrics", "data": {"spans_ingested": total_spans}}
-            )
+            await dashboard_broadcaster.publish({"event": "metrics", "data": {"spans_ingested": total_spans}})
         except Exception:
             logger.debug("SSE broadcast skipped (no event loop or subscribers)")
 

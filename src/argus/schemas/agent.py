@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -14,7 +15,7 @@ class AgentResponse(BaseModel):
     name: str
     framework: str
     description: str | None = None
-    tags: dict = {}
+    tags: dict[str, Any] = {}
     created_at: datetime
     updated_at: datetime
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Any
 
 from sqlalchemy import Column
 from sqlmodel import JSON, Field, SQLModel
@@ -24,6 +25,6 @@ class Span(SQLModel, table=True):
     latency_ms: int = 0
     status: str = "ok"  # "ok", "error"
     error_type: str | None = None
-    attributes: dict = Field(default_factory=dict, sa_column=Column(JSON))
+    attributes: dict[str, Any] = Field(default_factory=dict, sa_column=Column(JSON))
     started_at: datetime
     ended_at: datetime | None = None

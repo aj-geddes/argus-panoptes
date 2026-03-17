@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from typing import Any
 from uuid import uuid4
 
 from sqlalchemy import Column
@@ -16,7 +17,7 @@ class Agent(SQLModel, table=True):
     name: str = Field(index=True)
     framework: str  # "langgraph", "crewai", "openai", "adk", "custom"
     description: str | None = None
-    tags: dict = Field(default_factory=dict, sa_column=Column(JSON))
-    config: dict = Field(default_factory=dict, sa_column=Column(JSON))
+    tags: dict[str, Any] = Field(default_factory=dict, sa_column=Column(JSON))
+    config: dict[str, Any] = Field(default_factory=dict, sa_column=Column(JSON))
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))

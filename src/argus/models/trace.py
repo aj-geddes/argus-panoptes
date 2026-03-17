@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Any
 
 from sqlalchemy import Column
 from sqlmodel import JSON, Field, SQLModel
@@ -18,7 +19,7 @@ class Trace(SQLModel, table=True):
     started_at: datetime
     ended_at: datetime | None = None
     duration_ms: int | None = None
-    metadata_: dict = Field(
+    metadata_: dict[str, Any] = Field(
         default_factory=dict,
         sa_column=Column("metadata", JSON),
     )

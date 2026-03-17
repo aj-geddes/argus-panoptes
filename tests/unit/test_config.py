@@ -43,9 +43,7 @@ class TestConfigManager:
         cost = manager.get("cost_model.providers.openai.gpt-4o.input")
         assert cost == 2.50
 
-    def test_hot_reload_detects_change(
-        self, config_file: Path, sample_config: dict[str, Any]
-    ) -> None:
+    def test_hot_reload_detects_change(self, config_file: Path, sample_config: dict[str, Any]) -> None:
         """ConfigManager should detect and reload changed config files."""
         from argus.core.config import ConfigManager
 
@@ -85,9 +83,7 @@ class TestConfigManager:
         assert changed is False
         assert len(reload_count) == initial_count
 
-    def test_config_hash_changes_on_modification(
-        self, config_file: Path, sample_config: dict[str, Any]
-    ) -> None:
+    def test_config_hash_changes_on_modification(self, config_file: Path, sample_config: dict[str, Any]) -> None:
         """Internal hash should change when config content changes."""
         from argus.core.config import ConfigManager
 
