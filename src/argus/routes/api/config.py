@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from collections import deque
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -21,7 +22,7 @@ router = APIRouter(prefix="/api/v1/config", tags=["config"])
 _config_path: Path | None = None
 
 # Audit log (in-memory for now; could be persisted to DB in future)
-_audit_log: list[dict[str, Any]] = []
+_audit_log: deque[dict[str, Any]] = deque(maxlen=1000)
 
 
 class ConfigUpdateRequest(BaseModel):
@@ -55,9 +56,7 @@ def _add_audit_entry(action: str, details: str = "") -> None:
         "details": details,
     }
     _audit_log.append(entry)
-    # Keep only the last 1000 entries
-    if len(_audit_log) > 1000:
-        _audit_log.pop(0)
+    # maxlen=1000 on the deque handles bounding automatically
 
 
 @router.get("")

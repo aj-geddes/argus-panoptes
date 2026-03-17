@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import os
+import re
 import threading
 from collections.abc import Callable
 from pathlib import Path
@@ -14,6 +16,28 @@ from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
 logger = logging.getLogger(__name__)
+
+# Pattern to match ${VAR_NAME} in config values
+_ENV_VAR_RE = re.compile(r"\$\{([^}]+)\}")
+
+
+def _expand_env_vars(obj: Any) -> Any:
+    """Recursively expand ${VAR} patterns in config values with os.environ.
+
+    If the env var is not set, the placeholder is left as-is.
+    """
+    if isinstance(obj, str):
+
+        def _replace(match: re.Match[str]) -> str:
+            var_name = match.group(1)
+            return os.environ.get(var_name, match.group(0))
+
+        return _ENV_VAR_RE.sub(_replace, obj)
+    if isinstance(obj, dict):
+        return {k: _expand_env_vars(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_expand_env_vars(item) for item in obj]
+    return obj
 
 
 class ConfigManager:
@@ -39,7 +63,7 @@ class ConfigManager:
         if new_hash == self._hash:
             return False
         with self._lock:
-            self._config = yaml.safe_load(content) or {}
+            self._config = _expand_env_vars(yaml.safe_load(content) or {})
             self._hash = new_hash
         logger.info("Config loaded from %s (hash: %s...)", self._path, new_hash[:8])
         if self._on_change:

@@ -29,7 +29,7 @@ async def test_app_has_cors_headers(app_client) -> None:
     response = await app_client.options(
         "/health",
         headers={
-            "Origin": "http://localhost:3000",
+            "Origin": "http://localhost:8000",
             "Access-Control-Request-Method": "GET",
         },
     )

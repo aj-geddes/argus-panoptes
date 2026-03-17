@@ -98,11 +98,18 @@ def create_app(config_path: str | None = None) -> FastAPI:
         lifespan=lifespan,
     )
 
-    # CORS middleware
+    # CORS middleware — config-driven origins
+    cors_config = _config.get("cors", {})
+    if isinstance(cors_config, dict):
+        cors_origins = cors_config.get("allowed_origins", ["http://localhost:8000"])
+    else:
+        cors_origins = ["http://localhost:8000"]
+    # Per CORS spec, allow_credentials=True is invalid with wildcard origins
+    allow_credentials = "*" not in cors_origins
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
+        allow_origins=cors_origins,
+        allow_credentials=allow_credentials,
         allow_methods=["*"],
         allow_headers=["*"],
     )

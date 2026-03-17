@@ -6,6 +6,7 @@ import logging
 from datetime import UTC, datetime
 from typing import Any
 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select
 
@@ -196,7 +197,14 @@ async def process_ingest_request(
                     )
                     session.add(tool_call)
 
-                total_spans += 1
+                # Flush to detect duplicate span_id early
+                try:
+                    await session.flush()
+                    total_spans += 1
+                except IntegrityError:
+                    await session.rollback()
+                    logger.warning("Duplicate span_id '%s' skipped", span_data.spanId)
+                    continue
 
     await session.commit()
     logger.info("Ingested %d spans", total_spans)

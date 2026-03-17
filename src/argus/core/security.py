@@ -108,7 +108,11 @@ def setup_security_middleware(
     rate_limit_enabled = rate_limit_config.get("enabled", False)
 
     if not api_key_enabled and not rate_limit_enabled:
-        logger.info("Security middleware: no auth or rate limiting enabled")
+        logger.warning(
+            "Security middleware: no auth or rate limiting enabled — "
+            "all endpoints including config write are unauthenticated. "
+            "Set security.api_key_auth.enabled=true in config to secure your instance."
+        )
         return
 
     # Resolve the API key: config value or env var

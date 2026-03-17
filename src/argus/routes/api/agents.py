@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from argus.core.database import get_session
+from argus.core.utils import parse_time_range
 from argus.services.agent_registry import AgentRegistry
 from argus.services.metrics import MetricsService
 
@@ -73,7 +74,7 @@ async def get_agent_metrics(
         raise HTTPException(status_code=404, detail="Agent not found")
 
     now = datetime.now(UTC)
-    delta = _parse_time_range(time_range)
+    delta = parse_time_range(time_range)
     time_start = now - delta
 
     # Get spans-based summary for this agent
@@ -127,16 +128,3 @@ async def get_agent_metrics(
         "total_cost_usd": float(total_cost),
         "avg_latency_ms": float(avg_latency),
     }
-
-
-def _parse_time_range(time_range: str) -> timedelta:
-    """Parse a time range string like '1h', '24h', '7d' into a timedelta."""
-    unit = time_range[-1]
-    value = int(time_range[:-1])
-    if unit == "m":
-        return timedelta(minutes=value)
-    if unit == "h":
-        return timedelta(hours=value)
-    if unit == "d":
-        return timedelta(days=value)
-    return timedelta(hours=1)  # default fallback

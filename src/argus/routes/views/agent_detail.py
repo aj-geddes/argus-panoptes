@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -13,6 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import func, select
 
 from argus.core.database import get_session
+from argus.core.utils import parse_time_range
 from argus.models.agent import Agent
 from argus.models.span import Span
 from argus.models.trace import Trace
@@ -22,22 +23,6 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 templates = Jinja2Templates(directory="src/templates")
-
-
-def _parse_time_range(time_range: str) -> timedelta:
-    """Parse a time range string like '1h', '24h', '7d' into a timedelta."""
-    unit = time_range[-1]
-    try:
-        value = int(time_range[:-1])
-    except ValueError:
-        value = 1
-    if unit == "m":
-        return timedelta(minutes=value)
-    if unit == "h":
-        return timedelta(hours=value)
-    if unit == "d":
-        return timedelta(days=value)
-    return timedelta(hours=1)
 
 
 @router.get("/agents", response_class=HTMLResponse)
@@ -71,7 +56,7 @@ async def agent_detail(
         raise HTTPException(status_code=404, detail="Agent not found")
 
     now = datetime.now(UTC)
-    delta = _parse_time_range(time_range)
+    delta = parse_time_range(time_range)
     time_start = now - delta
 
     # Get per-agent metrics

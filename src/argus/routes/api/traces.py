@@ -28,6 +28,8 @@ async def compare_traces(
         raise HTTPException(status_code=400, detail="trace_ids query parameter is required")
 
     ids = [tid.strip() for tid in trace_ids.split(",") if tid.strip()]
+    if len(ids) > 10:
+        raise HTTPException(status_code=400, detail="Too many trace IDs. Maximum is 10.")
     results = await _service.compare_traces(session, ids)
     return {"traces": results}
 

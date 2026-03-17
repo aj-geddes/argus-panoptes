@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from argus.core.database import get_session
@@ -54,7 +54,7 @@ async def list_alert_rules() -> dict[str, Any]:
 
 
 @router.get("/history")
-async def get_alert_history(limit: int = 100) -> dict[str, Any]:
+async def get_alert_history(limit: int = Query(default=100, ge=1, le=1000)) -> dict[str, Any]:
     """Get recent alert event history."""
     engine = get_alert_engine()
     history = engine.get_history(limit=limit)

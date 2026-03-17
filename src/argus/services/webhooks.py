@@ -2,15 +2,66 @@
 
 from __future__ import annotations
 
+import ipaddress
 import logging
+import socket
 from dataclasses import dataclass, field
 from typing import Any
+from urllib.parse import urlparse
 
 import httpx
 
 from argus.services.alerting import AlertEvent
 
 logger = logging.getLogger(__name__)
+
+
+def _validate_webhook_url(url: str) -> bool:
+    """Validate a webhook URL to prevent SSRF attacks.
+
+    Blocks:
+    - Non-HTTP/HTTPS schemes (e.g. file://, ftp://)
+    - Private/loopback/link-local IP addresses
+    - localhost hostname
+
+    Returns True if the URL is safe, False otherwise.
+    """
+    try:
+        parsed = urlparse(url)
+    except Exception:
+        return False
+
+    # Only allow http and https schemes
+    if parsed.scheme not in ("http", "https"):
+        return False
+
+    hostname = parsed.hostname
+    if not hostname:
+        return False
+
+    # Block localhost by name
+    if hostname in ("localhost", "localhost.localdomain"):
+        return False
+
+    # Try to parse hostname as IP address directly
+    try:
+        addr = ipaddress.ip_address(hostname)
+        if addr.is_private or addr.is_loopback or addr.is_link_local or addr.is_reserved:
+            return False
+    except ValueError:
+        # Not an IP address, it's a hostname — try DNS resolution
+        try:
+            resolved = socket.getaddrinfo(hostname, None, socket.AF_UNSPEC, socket.SOCK_STREAM)
+            for _family, _type, _proto, _canonname, sockaddr in resolved:
+                ip_str = sockaddr[0]
+                addr = ipaddress.ip_address(ip_str)
+                if addr.is_private or addr.is_loopback or addr.is_link_local or addr.is_reserved:
+                    return False
+        except socket.gaierror:
+            # DNS resolution failed — allow it (the actual request will fail later)
+            pass
+
+    return True
 
 
 @dataclass
@@ -39,10 +90,17 @@ class WebhookNotifier:
                 url=wh.get("url", ""),
                 events=wh.get("events", []),
             )
-            if config.url:
-                self.configs.append(config)
-            else:
+            if not config.url:
                 logger.warning("Skipping webhook '%s': no URL configured", config.name)
+            elif not _validate_webhook_url(config.url):
+                logger.warning(
+                    "Skipping webhook '%s': URL '%s' failed SSRF validation "
+                    "(private/loopback/link-local IP or non-HTTP scheme)",
+                    config.name,
+                    config.url,
+                )
+            else:
+                self.configs.append(config)
 
     def update_configs(self, webhooks: list[dict[str, Any]]) -> None:
         """Update webhook configs from new config (hot-reload support)."""

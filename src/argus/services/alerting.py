@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import re
+from collections import deque
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
 from typing import Any
@@ -89,7 +90,7 @@ class AlertEngine:
 
     def __init__(self, rules: list[dict[str, Any]] | None = None) -> None:
         self.rules: list[AlertRule] = []
-        self._history: list[AlertEvent] = []
+        self._history: deque[AlertEvent] = deque(maxlen=10_000)
         self._evaluator = ConditionEvaluator()
         if rules:
             self._load_rules(rules)
@@ -206,15 +207,39 @@ class AlertEngine:
     async def check_alerts(self, session: AsyncSession) -> list[AlertEvent]:
         """Full alert check cycle: compute metrics then evaluate rules.
 
-        Uses the largest window from all rules for metric computation.
+        Groups rules by window, computes metrics per window, and evaluates
+        each rule against the metrics for its own window.
         """
         if not self.rules:
             return []
 
-        # Use the first rule's window (could be smarter, but sufficient for now)
-        window = self.rules[0].window if self.rules else "5m"
-        metrics = await self.compute_metrics(session, window=window)
-        return self.evaluate(metrics)
+        # Group rules by window
+        window_groups: dict[str, list[AlertRule]] = {}
+        for rule in self.rules:
+            window_groups.setdefault(rule.window, []).append(rule)
+
+        all_events: list[AlertEvent] = []
+        for window, rules_in_window in window_groups.items():
+            metrics = await self.compute_metrics(session, window=window)
+            # Evaluate only the rules that belong to this window
+            for rule in rules_in_window:
+                try:
+                    metric, op, threshold = parse_condition(rule.condition)
+                    if self._evaluator.evaluate(metric, op, threshold, metrics):
+                        metric_value = metrics.get(metric, 0.0)
+                        event = AlertEvent(
+                            rule_name=rule.name,
+                            severity=rule.severity,
+                            status="fired",
+                            metric_value=metric_value,
+                            threshold=threshold,
+                            message=f"{metric} is {metric_value}, threshold {op} {threshold}",
+                        )
+                        all_events.append(event)
+                        self._history.append(event)
+                except ValueError:
+                    logger.warning("Could not evaluate rule '%s': invalid condition", rule.name)
+        return all_events
 
 
 def _parse_window(window: str) -> timedelta:
