@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Config Editor{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+    <!-- Page header -->
+    <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-bold text-white">Configuration Editor</h2>
+        <span class="text-sm text-slate-400">Changes are applied immediately (no restart needed)</span>
+    </div>
+
+    <!-- Status message -->
+    {% if status == "success" %}
+    <div class="bg-emerald-900/30 border border-emerald-700/50 rounded-lg px-4 py-3">
+        <p class="text-emerald-400 text-sm font-medium">Configuration saved and applied successfully.</p>
+    </div>
+    {% elif status == "error" %}
+    <div class="bg-rose-900/30 border border-rose-700/50 rounded-lg px-4 py-3">
+        <p class="text-rose-400 text-sm font-medium">Configuration validation failed:</p>
+        <ul class="mt-2 space-y-1">
+            {% for error in errors %}
+            <li class="text-rose-300 text-xs font-mono">{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <!-- Config editor form -->
+    <div class="bg-surface rounded-xl border border-slate-700/50">
+        <div class="px-5 py-4 border-b border-slate-700/50 flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-white">config/argus.yaml</h3>
+            <div id="config-status"></div>
+        </div>
+        <form hx-post="/config/update"
+              hx-target="body"
+              hx-swap="innerHTML">
+            <div class="p-4">
+                <textarea name="config_yaml"
+                          rows="30"
+                          class="w-full font-mono text-sm bg-slate-900 text-slate-200 border border-slate-700/50 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
+                          spellcheck="false">{{ config_yaml }}</textarea>
+            </div>
+            <div class="px-5 py-4 border-t border-slate-700/50 flex items-center justify-between">
+                <p class="text-xs text-slate-500">
+                    Tip: The config file is hot-reloaded. Save here or edit the file directly on disk.
+                </p>
+                <div class="flex items-center gap-3">
+                    <button type="button"
+                            hx-post="/api/v1/config/validate"
+                            hx-target="#validation-result"
+                            hx-swap="innerHTML"
+                            hx-include="[name='config_yaml']"
+                            class="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-lg text-sm font-medium text-white transition-colors">
+                        Validate
+                    </button>
+                    <button type="submit"
+                            class="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg text-sm font-medium text-white transition-colors">
+                        Save &amp; Apply
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Validation result area -->
+    <div id="validation-result"></div>
+
+</div>
+{% endblock %}

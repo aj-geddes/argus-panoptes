@@ -115,13 +115,21 @@
                    class="block px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed">
                     Cost Analytics (coming soon)
                 </a>
-                <a href="#"
-                   class="block px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed">
-                    Alerts (coming soon)
+                <a href="/alerts"
+                   class="block px-3 py-2 rounded-lg text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+                   hx-get="/alerts"
+                   hx-target="#main-content"
+                   hx-push-url="true"
+                   hx-indicator="#loading">
+                    Alerts
                 </a>
-                <a href="#"
-                   class="block px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed">
-                    Config (coming soon)
+                <a href="/config"
+                   class="block px-3 py-2 rounded-lg text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+                   hx-get="/config"
+                   hx-target="#main-content"
+                   hx-push-url="true"
+                   hx-indicator="#loading">
+                    Config
                 </a>
             </nav>
         </aside>

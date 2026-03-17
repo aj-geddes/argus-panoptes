@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}{{ agent.name }}{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+    <!-- Page header -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h2 class="text-2xl font-bold text-white">{{ agent.name }}</h2>
+            <div class="flex items-center gap-3 mt-1">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-sky-900/50 text-sky-400">
+                    {{ agent.framework }}
+                </span>
+                {% if agent.description %}
+                <span class="text-sm text-slate-400">{{ agent.description }}</span>
+                {% endif %}
+            </div>
+        </div>
+        {% include 'components/time_picker.html' %}
+    </div>
+
+    <!-- Metric cards -->
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div class="bg-surface rounded-xl border border-slate-700/50 p-4">
+            <div class="text-xs text-slate-400 font-medium uppercase tracking-wide">Traces</div>
+            <div class="mt-1 text-2xl font-bold text-white font-mono">{{ "{:,}".format(total_traces) }}</div>
+        </div>
+        <div class="bg-surface rounded-xl border border-slate-700/50 p-4">
+            <div class="text-xs text-slate-400 font-medium uppercase tracking-wide">Spans</div>
+            <div class="mt-1 text-2xl font-bold text-white font-mono">{{ "{:,}".format(total_spans) }}</div>
+        </div>
+        <div class="bg-surface rounded-xl border border-slate-700/50 p-4">
+            <div class="text-xs text-slate-400 font-medium uppercase tracking-wide">Tokens</div>
+            <div class="mt-1 text-2xl font-bold text-white font-mono">{{ "{:,}".format(total_tokens) }}</div>
+        </div>
+        <div class="bg-surface rounded-xl border border-slate-700/50 p-4">
+            <div class="text-xs text-slate-400 font-medium uppercase tracking-wide">Cost</div>
+            <div class="mt-1 text-2xl font-bold text-emerald-400 font-mono">${{ "%.4f" | format(total_cost) }}</div>
+        </div>
+        <div class="bg-surface rounded-xl border border-slate-700/50 p-4">
+            <div class="text-xs text-slate-400 font-medium uppercase tracking-wide">Avg Latency</div>
+            <div class="mt-1 text-2xl font-bold text-white font-mono">{{ "%.0f" | format(avg_latency) }}ms</div>
+        </div>
+        <div class="bg-surface rounded-xl border border-slate-700/50 p-4">
+            <div class="text-xs text-slate-400 font-medium uppercase tracking-wide">Errors</div>
+            <div class="mt-1 text-2xl font-bold font-mono {% if error_count > 0 %}text-rose-400{% else %}text-white{% endif %}">{{ error_count }}</div>
+        </div>
+    </div>
+
+    <!-- Agent info -->
+    <div class="bg-surface rounded-xl border border-slate-700/50 p-5">
+        <h3 class="text-sm font-semibold text-white mb-3">Agent Details</h3>
+        <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+                <span class="text-slate-400">ID:</span>
+                <span class="font-mono text-xs text-slate-300 ml-2">{{ agent.id }}</span>
+            </div>
+            <div>
+                <span class="text-slate-400">Framework:</span>
+                <span class="text-slate-300 ml-2">{{ agent.framework }}</span>
+            </div>
+            <div>
+                <span class="text-slate-400">Created:</span>
+                <span class="text-slate-300 ml-2">{{ agent.created_at.strftime('%Y-%m-%d %H:%M:%S') if agent.created_at else '-' }}</span>
+            </div>
+            <div>
+                <span class="text-slate-400">Updated:</span>
+                <span class="text-slate-300 ml-2">{{ agent.updated_at.strftime('%Y-%m-%d %H:%M:%S') if agent.updated_at else '-' }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent traces -->
+    <div class="bg-surface rounded-xl border border-slate-700/50">
+        <div class="px-5 py-4 border-b border-slate-700/50">
+            <h3 class="text-lg font-semibold text-white">Recent Traces</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="text-left text-slate-400 border-b border-slate-700/50">
+                        <th class="px-5 py-3 font-medium">Trace ID</th>
+                        <th class="px-5 py-3 font-medium">Status</th>
+                        <th class="px-5 py-3 font-medium">Started</th>
+                        <th class="px-5 py-3 font-medium">Duration</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-700/50">
+                    {% if recent_traces %}
+                        {% for trace in recent_traces %}
+                        <tr class="hover:bg-slate-800/50 transition-colors">
+                            <td class="px-5 py-3">
+                                <a href="/traces/{{ trace.id }}"
+                                   class="font-mono text-xs text-sky-400 hover:text-sky-300"
+                                   hx-get="/traces/{{ trace.id }}"
+                                   hx-target="#main-content"
+                                   hx-push-url="true">
+                                    {{ trace.id[:16] }}...
+                                </a>
+                            </td>
+                            <td class="px-5 py-3">
+                                {% if trace.status == "completed" %}
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-900/50 text-emerald-400">
+                                    {{ trace.status }}
+                                </span>
+                                {% elif trace.status == "failed" %}
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-rose-900/50 text-rose-400">
+                                    {{ trace.status }}
+                                </span>
+                                {% else %}
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-sky-900/50 text-sky-400">
+                                    {{ trace.status }}
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-5 py-3 font-mono text-xs text-slate-400">{{ trace.started_at.strftime('%Y-%m-%d %H:%M:%S') if trace.started_at else '-' }}</td>
+                            <td class="px-5 py-3 font-mono text-xs text-slate-300">{{ trace.duration_ms or '-' }}ms</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="px-5 py-8 text-center text-slate-500">No traces for this agent yet.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Recent spans -->
+    <div class="bg-surface rounded-xl border border-slate-700/50">
+        <div class="px-5 py-4 border-b border-slate-700/50">
+            <h3 class="text-lg font-semibold text-white">Recent Spans</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="text-left text-slate-400 border-b border-slate-700/50">
+                        <th class="px-5 py-3 font-medium">Span ID</th>
+                        <th class="px-5 py-3 font-medium">Operation</th>
+                        <th class="px-5 py-3 font-medium">Model</th>
+                        <th class="px-5 py-3 font-medium">Tokens</th>
+                        <th class="px-5 py-3 font-medium">Cost</th>
+                        <th class="px-5 py-3 font-medium">Latency</th>
+                        <th class="px-5 py-3 font-medium">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-700/50">
+                    {% if recent_spans %}
+                        {% for span in recent_spans %}
+                        <tr class="hover:bg-slate-800/50 transition-colors">
+                            <td class="px-5 py-3 font-mono text-xs text-slate-300">{{ span.id[:12] }}...</td>
+                            <td class="px-5 py-3 text-white">{{ span.operation_name }}</td>
+                            <td class="px-5 py-3 text-slate-300 font-mono text-xs">{{ span.model or "-" }}</td>
+                            <td class="px-5 py-3 font-mono text-xs text-slate-300">{{ "{:,}".format(span.total_tokens) }}</td>
+                            <td class="px-5 py-3 font-mono text-xs text-emerald-400">${{ "%.6f" | format(span.cost_usd) }}</td>
+                            <td class="px-5 py-3 font-mono text-xs text-slate-300">{{ span.latency_ms }}ms</td>
+                            <td class="px-5 py-3">
+                                {% if span.status == "ok" %}
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-900/50 text-emerald-400">ok</span>
+                                {% else %}
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-rose-900/50 text-rose-400">{{ span.status }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="px-5 py-8 text-center text-slate-500">No spans for this agent yet.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
