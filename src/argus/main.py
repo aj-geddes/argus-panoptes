@@ -20,7 +20,9 @@ from argus.routes.api.agents import router as agents_router
 from argus.routes.api.ingest import router as ingest_router
 from argus.routes.api.metrics import router as metrics_router
 from argus.routes.api.sse import router as sse_router
+from argus.routes.api.traces import router as traces_api_router
 from argus.routes.views.dashboard import router as dashboard_router
+from argus.routes.views.traces import router as traces_view_router
 from argus.services.ingestion import init_cost_calculator
 
 logger = logging.getLogger(__name__)
@@ -98,7 +100,9 @@ def create_app(config_path: str | None = None) -> FastAPI:
     app.include_router(ingest_router)
     app.include_router(agents_router)
     app.include_router(metrics_router)
+    app.include_router(traces_api_router)
     app.include_router(sse_router)
+    app.include_router(traces_view_router)
     app.include_router(dashboard_router)
 
     return app

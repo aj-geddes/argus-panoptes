@@ -1,0 +1,60 @@
+{# Recursive span tree node partial.
+   Expects: node (dict with span, children, depth) #}
+<div class="span-tree-node" style="margin-left: {{ node.depth * 24 }}px;">
+    <div class="flex items-center gap-2 py-2 px-3 rounded-lg hover:bg-slate-800/50 transition-colors group cursor-pointer"
+         hx-get="/traces/spans/{{ node.span.id }}/tool-calls"
+         hx-target="#tool-call-detail-{{ node.span.id }}"
+         hx-swap="innerHTML"
+         hx-trigger="click">
+
+        {# Expand/collapse indicator #}
+        {% if node.children %}
+        <svg class="w-4 h-4 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+        {% else %}
+        <div class="w-4 h-4 flex-shrink-0"></div>
+        {% endif %}
+
+        {# Status indicator dot #}
+        {% if node.span.status == "ok" %}
+        <div class="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0"></div>
+        {% else %}
+        <div class="w-2 h-2 rounded-full bg-rose-400 flex-shrink-0"></div>
+        {% endif %}
+
+        {# Operation name #}
+        <span class="text-sm font-medium text-white">{{ node.span.operation_name }}</span>
+
+        {# Model badge #}
+        {% if node.span.model %}
+        <span class="text-xs px-1.5 py-0.5 rounded bg-slate-700/80 text-slate-300 font-mono">{{ node.span.model }}</span>
+        {% endif %}
+
+        {# Metrics #}
+        <div class="flex-1"></div>
+        <div class="flex items-center gap-3 text-xs text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">
+            {% if node.span.total_tokens > 0 %}
+            <span class="font-mono">{{ "{:,}".format(node.span.total_tokens) }} tok</span>
+            {% endif %}
+            {% if node.span.cost_usd > 0 %}
+            <span class="font-mono text-emerald-400">${{ "%.4f" | format(node.span.cost_usd) }}</span>
+            {% endif %}
+            <span class="font-mono">{{ node.span.latency_ms }}ms</span>
+        </div>
+    </div>
+
+    {# Tool call detail area (populated via HTMX) #}
+    <div id="tool-call-detail-{{ node.span.id }}"></div>
+
+    {# Recursively render children #}
+    {% if node.children %}
+    <div class="border-l border-slate-700/30 ml-2">
+        {% for child_node in node.children %}
+            {% with node=child_node %}
+                {% include 'components/span_tree.html' %}
+            {% endwith %}
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>

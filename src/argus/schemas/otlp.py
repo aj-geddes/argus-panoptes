@@ -40,9 +40,17 @@ class SpanData(BaseModel):
     status: dict[str, str] | None = None
 
 
+class InstrumentationScope(BaseModel):
+    """Instrumentation scope metadata."""
+
+    name: str = ""
+    version: str = ""
+
+
 class ScopeSpans(BaseModel):
     """A collection of spans from a single instrumentation scope."""
 
+    scope: InstrumentationScope | None = None
     spans: list[SpanData] = Field(default_factory=list)
 
 

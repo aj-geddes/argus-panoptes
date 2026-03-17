@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Compare Traces{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Breadcrumb + header -->
+    <div class="flex items-center gap-2 text-sm text-slate-400">
+        <a href="/traces"
+           hx-get="/traces"
+           hx-target="#main-content"
+           hx-push-url="true"
+           class="hover:text-white transition-colors">Traces</a>
+        <span>/</span>
+        <span class="text-white">Compare</span>
+    </div>
+
+    <h2 class="text-2xl font-bold text-white">Compare Traces</h2>
+
+    {% if traces %}
+    <div class="grid grid-cols-1 lg:grid-cols-{{ traces|length }} gap-4">
+        {% for trace in traces %}
+        <div class="bg-surface rounded-xl border border-slate-700/50 overflow-hidden">
+            <!-- Trace header -->
+            <div class="px-4 py-3 border-b border-slate-700/50">
+                <div class="flex items-center justify-between">
+                    <a href="/traces/{{ trace.id }}"
+                       class="font-mono text-sm text-emerald-400 hover:text-emerald-300">
+                        {{ trace.id[:16] }}...
+                    </a>
+                    {% if trace.status == "completed" %}
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-900/50 text-emerald-400">
+                        completed
+                    </span>
+                    {% elif trace.status == "failed" %}
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-rose-900/50 text-rose-400">
+                        failed
+                    </span>
+                    {% else %}
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-sky-900/50 text-sky-400">
+                        {{ trace.status }}
+                    </span>
+                    {% endif %}
+                </div>
+                <div class="text-xs text-slate-400 mt-1">
+                    Agent: {{ trace.agent_name }} | Spans: {{ trace.spans|length }}
+                </div>
+            </div>
+
+            <!-- Trace summary -->
+            <div class="p-4 grid grid-cols-2 gap-2 border-b border-slate-700/50">
+                <div>
+                    <div class="text-xs text-slate-400">Duration</div>
+                    <div class="font-mono text-sm text-white">{{ trace.duration_ms or 0 }}ms</div>
+                </div>
+                <div>
+                    <div class="text-xs text-slate-400">Tokens</div>
+                    <div class="font-mono text-sm text-white">
+                        {% set total_tokens = trace.spans | map(attribute='total_tokens') | sum %}
+                        {{ "{:,}".format(total_tokens) }}
+                    </div>
+                </div>
+                <div>
+                    <div class="text-xs text-slate-400">Cost</div>
+                    <div class="font-mono text-sm text-emerald-400">
+                        {% set total_cost = trace.spans | map(attribute='cost_usd') | sum %}
+                        ${{ "%.4f" | format(total_cost) }}
+                    </div>
+                </div>
+                <div>
+                    <div class="text-xs text-slate-400">Spans</div>
+                    <div class="font-mono text-sm text-white">{{ trace.spans|length }}</div>
+                </div>
+            </div>
+
+            <!-- Span tree (compact) -->
+            <div class="p-3 max-h-96 overflow-y-auto">
+                {% for node in trace.span_tree %}
+                    {% include 'components/span_tree.html' %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="bg-surface rounded-xl border border-slate-700/50 p-12 text-center text-slate-500">
+        <div class="text-lg">No traces to compare</div>
+        <div class="text-sm mt-2">Select traces from the <a href="/traces" class="text-emerald-400 hover:text-emerald-300">trace list</a> to compare them</div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

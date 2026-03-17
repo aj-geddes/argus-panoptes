@@ -103,9 +103,13 @@
                    hx-indicator="#loading">
                     Agents
                 </a>
-                <a href="#"
-                   class="block px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed">
-                    Traces (coming soon)
+                <a href="/traces"
+                   class="block px-3 py-2 rounded-lg text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+                   hx-get="/traces"
+                   hx-target="#main-content"
+                   hx-push-url="true"
+                   hx-indicator="#loading">
+                    Traces
                 </a>
                 <a href="#"
                    class="block px-3 py-2 rounded-lg text-sm text-slate-500 cursor-not-allowed">

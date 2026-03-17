@@ -76,6 +76,7 @@ async def get_or_create_trace(
     trace_id: str,
     agent_id: str,
     started_at: datetime,
+    session_id: str | None = None,
 ) -> Trace:
     """Get an existing trace by ID or create a new one."""
     stmt = select(Trace).where(Trace.id == trace_id)
@@ -87,8 +88,13 @@ async def get_or_create_trace(
             agent_id=agent_id,
             status="running",
             started_at=started_at,
+            session_id=session_id,
         )
         session.add(trace)
+        await session.flush()
+    elif session_id and not trace.session_id:
+        # Update session_id if not already set
+        trace.session_id = session_id
         await session.flush()
     return trace
 
@@ -105,23 +111,36 @@ async def process_ingest_request(
         agent_name = str(_get_attr(resource_span.resource.attributes, "gen_ai.agent.name") or "unknown")
 
         for scope_span in resource_span.scopeSpans:
+            # Detect framework from scope name if available
+            framework = "custom"
+            if scope_span.scope and scope_span.scope.name:
+                framework = scope_span.scope.name
+
             for span_data in scope_span.spans:
-                # Get or create agent
-                agent = await get_or_create_agent(session, agent_name)
+                # Get or create agent (with framework hint from scope)
+                agent = await get_or_create_agent(session, agent_name, framework=framework)
 
                 # Parse timestamps
                 started_at = _nano_to_datetime(span_data.startTimeUnixNano)
                 ended_at = _nano_to_datetime(span_data.endTimeUnixNano) if span_data.endTimeUnixNano else None
 
-                # Get or create trace
-                trace = await get_or_create_trace(session, span_data.traceId, agent.id, started_at)
-
-                # Extract span attributes
+                # Extract GenAI semantic convention attributes (v1.37)
                 operation_name = str(_get_attr(span_data.attributes, "gen_ai.operation.name") or "unknown")
                 model = _get_attr(span_data.attributes, "gen_ai.request.model")
                 provider = _get_attr(span_data.attributes, "gen_ai.provider.name")
                 input_tokens = _get_attr(span_data.attributes, "gen_ai.usage.input_tokens") or 0
                 output_tokens = _get_attr(span_data.attributes, "gen_ai.usage.output_tokens") or 0
+                conversation_id = _get_attr(span_data.attributes, "gen_ai.conversation.id")
+                error_type = _get_attr(span_data.attributes, "error.type")
+
+                # Get or create trace (with conversation_id -> session_id mapping)
+                trace = await get_or_create_trace(
+                    session,
+                    span_data.traceId,
+                    agent.id,
+                    started_at,
+                    session_id=str(conversation_id) if conversation_id else None,
+                )
 
                 # Calculate latency
                 latency_ms = 0
@@ -138,6 +157,11 @@ async def process_ingest_request(
                         output_tokens=int(output_tokens),
                     )
 
+                # Determine span status from OTel status code or error.type attribute
+                span_status = "ok"
+                if error_type or (span_data.status and span_data.status.get("code") == "STATUS_CODE_ERROR"):
+                    span_status = "error"
+
                 # Create span
                 span = Span(
                     id=span_data.spanId,
@@ -151,13 +175,14 @@ async def process_ingest_request(
                     total_tokens=int(input_tokens) + int(output_tokens),
                     cost_usd=cost_usd,
                     latency_ms=latency_ms,
-                    status="ok",
+                    status=span_status,
+                    error_type=str(error_type) if error_type else None,
                     started_at=started_at,
                     ended_at=ended_at,
                 )
                 session.add(span)
 
-                # Handle tool calls if present
+                # Handle tool calls if present (gen_ai.tool.name / gen_ai.tool.type)
                 tool_name = _get_attr(span_data.attributes, "gen_ai.tool.name")
                 if tool_name:
                     tool_type = str(_get_attr(span_data.attributes, "gen_ai.tool.type") or "function")
@@ -165,7 +190,7 @@ async def process_ingest_request(
                         span_id=span.id,
                         tool_name=str(tool_name),
                         tool_type=tool_type,
-                        success=True,
+                        success=span_status == "ok",
                         duration_ms=latency_ms,
                         called_at=started_at,
                     )

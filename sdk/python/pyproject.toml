@@ -1,0 +1,20 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "argus-sdk"
+version = "0.1.0"
+description = "Lightweight Python SDK for reporting spans to Argus Panoptes"
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.10"
+dependencies = [
+    "httpx>=0.25",
+]
+
+[project.urls]
+Homepage = "https://github.com/aj-geddes/argus-panoptes"
+
+[tool.hatch.build.targets.wheel]
+packages = ["argus_sdk"]
