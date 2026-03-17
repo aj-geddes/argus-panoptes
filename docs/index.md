@@ -71,45 +71,44 @@ layout: default
   </div>
 </div>
 
----
+<hr>
 
-## Quick Start
-
-Up and running in under two minutes with Docker:
-
-```bash
-git clone https://github.com/aj-geddes/argus-panoptes.git
+<h2>Quick Start</h2>
+<p>Up and running in under two minutes with Docker:</p>
+<pre><code>git clone https://github.com/aj-geddes/argus-panoptes.git
 cd argus-panoptes/docker
-docker compose up
-```
+docker compose up</code></pre>
+<p>Open <a href="http://localhost:8000">http://localhost:8000</a> — the dashboard is live.</p>
 
-Open [http://localhost:8000](http://localhost:8000) — the dashboard is live.
+<hr>
 
----
+<h2>Tech Stack</h2>
+<table>
+  <thead><tr><th>Layer</th><th>Technology</th></tr></thead>
+  <tbody>
+    <tr><td>Backend</td><td>Python 3.12+, FastAPI, SQLModel, SQLAlchemy async</td></tr>
+    <tr><td>Frontend</td><td>HTMX 2.x, Alpine.js 3.x, Tailwind CSS 4.x</td></tr>
+    <tr><td>Database</td><td>SQLite (dev) / PostgreSQL (prod)</td></tr>
+    <tr><td>Real-time</td><td>Server-Sent Events (SSE)</td></tr>
+    <tr><td>Config</td><td>YAML with watchdog hot-reload</td></tr>
+    <tr><td>Container</td><td>Docker multi-stage, non-root</td></tr>
+  </tbody>
+</table>
 
-## Tech Stack
+<hr>
 
-| Layer | Technology |
-|-------|-----------|
-| Backend | Python 3.12+, FastAPI, SQLModel, SQLAlchemy async |
-| Frontend | HTMX 2.x, Alpine.js 3.x, Tailwind CSS 4.x |
-| Database | SQLite (dev) / PostgreSQL (prod) |
-| Real-time | Server-Sent Events (SSE) |
-| Config | YAML with watchdog hot-reload |
-| Container | Docker multi-stage, non-root |
-
----
-
-## Supported Frameworks
-
-| Framework | Integration |
-|-----------|-------------|
-| LangGraph / LangChain | `OTEL_EXPORTER_OTLP_ENDPOINT` env var |
-| CrewAI | Native OTel instrumentation |
-| OpenAI Agents SDK | OTel Python SDK or Argus SDK shim |
-| Google ADK | OTel collector |
-| PydanticAI | Native OTel support |
-| AutoGen | `opentelemetry-instrumentation-autogen` |
-| Custom agents | REST API or [Python SDK]({{ '/sdk' | relative_url }}) |
+<h2>Supported Frameworks</h2>
+<table>
+  <thead><tr><th>Framework</th><th>Integration</th></tr></thead>
+  <tbody>
+    <tr><td>LangGraph / LangChain</td><td><code>OTEL_EXPORTER_OTLP_ENDPOINT</code> env var</td></tr>
+    <tr><td>CrewAI</td><td>Native OTel instrumentation</td></tr>
+    <tr><td>OpenAI Agents SDK</td><td>OTel Python SDK or Argus SDK shim</td></tr>
+    <tr><td>Google ADK</td><td>OTel collector</td></tr>
+    <tr><td>PydanticAI</td><td>Native OTel support</td></tr>
+    <tr><td>AutoGen</td><td><code>opentelemetry-instrumentation-autogen</code></td></tr>
+    <tr><td>Custom agents</td><td>REST API or <a href="{{ '/sdk' | relative_url }}">Python SDK</a></td></tr>
+  </tbody>
+</table>
 
 </div>
